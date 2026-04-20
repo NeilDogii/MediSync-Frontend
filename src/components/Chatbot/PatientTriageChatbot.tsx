@@ -116,7 +116,7 @@ export default function PatientTriageChatbot() {
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="bg-white shadow-xl rounded-3xl border border-cyan-100 overflow-hidden">
         <div className="bg-gradient-to-r from-[#0077B6] to-[#17A2B8] px-6 py-5 text-white">
-          <h1 className="text-3xl font-bold">Medisync Chatbot</h1>
+          <h1 className="text-3xl font-bold">Medibot</h1>
           <p className="text-sm mt-2 text-cyan-50">
             Uses your trained local model and dataset to predict a likely disease pattern and doctor department.
           </p>
