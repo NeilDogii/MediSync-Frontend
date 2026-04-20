@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { predictDiseaseAndDoctor } from "@/src/lib/mlPredict";
+import { predictDiseaseAndDoctor } from "@/lib/mlPredict";
 
 export async function POST(req: NextRequest) {
   try {
