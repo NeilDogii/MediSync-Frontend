@@ -8,11 +8,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
         port: "",
-        pathname: "/**"
-      }
+        pathname: "/**",
+      },
     ],
     // domains: ["images.unsplash.com"],
-  }
+  },
 };
 
 export default nextConfig;

@@ -1,13 +1,13 @@
-'use client'
-import React from 'react'
-import PatientCard, { samplePatients, getTotalVisits } from './patient'
-import PatientList, { samplePatientList } from './patientList'
-import Calender from './calender'
+"use client";
+import React from "react";
+import PatientCard, { samplePatients, getTotalVisits } from "./patient";
+import PatientList, { samplePatientList } from "./patientList";
+import Calender from "./calender";
 
 export default function DashboardBackground({
   children,
 }: {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }) {
   return (
     <>
@@ -15,47 +15,47 @@ export default function DashboardBackground({
       <div
         className="ml-64 flex-1 min-h-screen bg-white rounded-l-3xl overflow-y-auto relative"
         style={{
-          backgroundColor: '#D2F0F6',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundColor: "#D2F0F6",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="absolute inset-0">
-
           {/* Content Container */}
           <div className="relative z-10 p-6 sm:p-10">
             {children}
 
             {/* HEADER */}
-<div className="flex justify-between items-center px-10 max-[750px]:flex-col max-[750px]:items-center gap-4">
-  <div className="ml-25"> {/* shifting right */}
-    <h2 className="text-3xl font-bold text-gray-900 max-[750px]:text-2xl">
-      Your Clinical Dashboard
-    </h2>
-    <p className="text-gray-600 text-sm mt-1 max-[750px]:text-center">
-      Track patients, visits, and upcoming appointments.
-    </p>
-  </div>
-</div>
-
+            <div className="flex justify-between items-center px-10 max-[750px]:flex-col max-[750px]:items-center gap-4">
+              <div className="ml-25">
+                {" "}
+                {/* shifting right */}
+                <h2 className="text-3xl font-bold text-gray-900 max-[750px]:text-2xl">
+                  Your Clinical Dashboard
+                </h2>
+                <p className="text-gray-600 text-sm mt-1 max-[750px]:text-center">
+                  Track patients, visits, and upcoming appointments.
+                </p>
+              </div>
+            </div>
 
             {/* MAIN SECTION */}
-            <div className="mt-10 max-[750px]:px-2" >
-
+            <div className="mt-10 max-[750px]:px-2">
               {/* TODAY'S OVERVIEW – FULL WIDTH */}
               <div className="flex justify-center">
                 <div
                   className="relative z-10 bg-white rounded-3xl shadow-xl p-8 w-[815px]
                              max-[1100px]:w-[760px]
                              max-[950px]:w-[680px]
-                             max-[750px]:w-full max-[750px]:p-6" style={{
+                             max-[750px]:w-full max-[750px]:p-6"
+                  style={{
                     backgroundImage: "url('/assets/Background.jpg')",
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   }}
                 >
                   <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                    Today's Overview
+                    Today&apos;s Overview
                   </h2>
 
                   {/* Summary Stats */}
@@ -100,7 +100,6 @@ export default function DashboardBackground({
                            max-[950px]:gap-6
                            max-[750px]:flex-col max-[750px]:items-center"
               >
-
                 {/* PATIENT LIST */}
                 <div
                   className="bg-white rounded-3xl shadow-md p-6 w-[350px] h-[425px]
@@ -122,14 +121,11 @@ export default function DashboardBackground({
                 >
                   <Calender />
                 </div>
-
               </div>
             </div>
-
           </div>
-
         </div>
       </div>
     </>
-  )
+  );
 }

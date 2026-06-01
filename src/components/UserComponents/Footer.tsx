@@ -46,7 +46,6 @@ export default function Footer() {
       >
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8">
-
             {/* Logo Column */}
             <div className="lg:col-span-1 sm:col-span-2 flex flex-col items-start">
               <Image
@@ -57,7 +56,8 @@ export default function Footer() {
                 className="mb-2"
               />
               <p className="text-gray-800 text-sm leading-tight">
-                Copyright © 2025 Team Synapse<br />| All Rights Reserved
+                Copyright © 2025 Team Synapse
+                <br />| All Rights Reserved
               </p>
             </div>
 
@@ -65,11 +65,46 @@ export default function Footer() {
             <div>
               <h3 className="text-lg font-bold text-gray-900 mb-4">Product</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Features</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Pricing</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Case studies</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Reviews</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Updates</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Pricing
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Case studies
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Reviews
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Updates
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -77,11 +112,46 @@ export default function Footer() {
             <div>
               <h3 className="text-lg font-bold text-gray-900 mb-4">Company</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">About</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Contact us</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Careers</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Culture</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Blog</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Contact us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Careers
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Culture
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Blog
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -89,46 +159,97 @@ export default function Footer() {
             <div>
               <h3 className="text-lg font-bold text-gray-900 mb-4">Support</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Getting started</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Help center</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Server status</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Report a bug</a></li>
-                <li><a href="#" className="text-gray-800 hover:text-gray-900 transition-colors">Chat support</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Getting started
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Help center
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Server status
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Report a bug
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-800 hover:text-gray-900 transition-colors"
+                  >
+                    Chat support
+                  </a>
+                </li>
               </ul>
             </div>
 
             {/* Follow Us Column */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Follow us</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Follow us
+              </h3>
               <ul className="space-y-3">
                 <li>
-                  <a href="#" className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors">
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors"
+                  >
                     <Facebook size={20} /> <span>Facebook</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors">
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors"
+                  >
                     <Twitter size={20} /> <span>Twitter</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors">
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors"
+                  >
                     <Instagram size={20} /> <span>Instagram</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors">
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors"
+                  >
                     <Linkedin size={20} /> <span>LinkedIn</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors">
+                  <a
+                    href="#"
+                    className="flex items-center gap-3 text-gray-800 hover:text-gray-900 transition-colors"
+                  >
                     <Youtube size={20} /> <span>YouTube</span>
                   </a>
                 </li>
               </ul>
             </div>
-
           </div>
         </div>
       </div>

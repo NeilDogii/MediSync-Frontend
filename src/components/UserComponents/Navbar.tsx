@@ -2,7 +2,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { LogOut, Menu, X } from "lucide-react";
+import {
+  LogOut,
+  Menu,
+  X,
+  LayoutDashboard,
+  Calendar,
+  FileText,
+  CreditCard,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import Popup from "../global/Popup";
 import UserLoginForm from "./forms/UserLoginForm";
@@ -29,7 +37,6 @@ export default function Navbar({
     }
   }
 
-  // Function to generate link classes dynamically
   const getLinkClass = (href: string) =>
     pathname === href
       ? "text-[#0074cc] font-bold"
@@ -57,12 +64,7 @@ export default function Navbar({
           <Link href="/book" className={getLinkClass("/book")}>
             Book Now
           </Link>
-          <Link href="/help" className={getLinkClass("/help")}>
-            Help
-          </Link>
-          <Link href="/blogs" className={getLinkClass("/blogs")}>
-            Blogs
-          </Link>
+
           <Link href="/contact" className={getLinkClass("/contact")}>
             Contact Us
           </Link>
@@ -71,22 +73,52 @@ export default function Navbar({
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center space-x-4">
           {isLoggedIn ? (
-            <div className="flex items-center space-x-4">
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-[#0074cc] rounded-full flex items-center justify-center text-white font-semibold">
-                  U
+            <div className="relative group">
+              <div className="flex items-center space-x-4 cursor-pointer">
+                <div className="flex flex-col items-center">
+                  <div className="w-10 h-10 bg-[#0074cc] rounded-full flex items-center justify-center text-white font-semibold hover:bg-[#005fa3] transition-colors">
+                    U
+                  </div>
                 </div>
-                {/* <span className="text-xs text-gray-600 mt-1">User</span> */}
               </div>
-              <button
-                onClick={async () => {
-                  await deleteCookie(PATIENT_TOKEN_KEY);
-                  window.location.reload();
-                }}
-                className="text-red-500 cursor-pointer rounded-lg font-semibold transition-all"
-              >
-                <LogOut />
-              </button>
+
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                <div className="py-2">
+                  <Link
+                    href="/user/dashboard"
+                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0074cc] transition-colors"
+                  >
+                    <LayoutDashboard size={18} />
+                    <span>Dashboard</span>
+                  </Link>
+                  <Link
+                    href="/user/appointments"
+                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0074cc] transition-colors"
+                  >
+                    <Calendar size={18} />
+                    <span>My Appointments</span>
+                  </Link>
+                  <Link
+                    href="/user/payments"
+                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0074cc] transition-colors"
+                  >
+                    <CreditCard size={18} />
+                    <span>Payments</span>
+                  </Link>
+                  <div className="border-t border-gray-200 my-1"></div>
+                  <button
+                    onClick={async () => {
+                      await deleteCookie(PATIENT_TOKEN_KEY);
+                      window.location.reload();
+                    }}
+                    className="w-full flex items-center space-x-3 px-4 py-2 text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut size={18} />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <>
@@ -143,7 +175,7 @@ export default function Navbar({
             Home
           </Link>
           <Link
-            href="/book"
+            href="/appointment"
             onClick={() => setIsOpen(false)}
             className={getLinkClass("/book")}
           >
@@ -174,16 +206,51 @@ export default function Navbar({
           {/* Mobile Buttons */}
           <div className="border-t pt-5 flex flex-col space-y-3">
             {isLoggedIn ? (
-              <button
-                onClick={async () => {
-                  await deleteCookie(PATIENT_TOKEN_KEY);
-                  window.location.reload();
-                }}
-                className="flex items-center space-x-2 text-red-500 cursor-pointer rounded-lg font-semibold transition-all"
-              >
-                <LogOut />
-                <span>Logout</span>
-              </button>
+              <>
+                <Link
+                  href="/user/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-2 text-[#0074cc] cursor-pointer rounded-lg font-semibold transition-all hover:bg-blue-50 px-3 py-2"
+                >
+                  <LayoutDashboard size={18} />
+                  <span>Dashboard</span>
+                </Link>
+                <Link
+                  href="/user/appointments"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-2 text-[#0074cc] cursor-pointer rounded-lg font-semibold transition-all hover:bg-blue-50 px-3 py-2"
+                >
+                  <Calendar size={18} />
+                  <span>My Appointments</span>
+                </Link>
+                <Link
+                  href="/user/payments"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-2 text-[#0074cc] cursor-pointer rounded-lg font-semibold transition-all hover:bg-blue-50 px-3 py-2"
+                >
+                  <CreditCard size={18} />
+                  <span>Payments</span>
+                </Link>
+                <Link
+                  href="/user/medical-records"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-2 text-[#0074cc] cursor-pointer rounded-lg font-semibold transition-all hover:bg-blue-50 px-3 py-2"
+                >
+                  <FileText size={18} />
+                  <span>Medical Records</span>
+                </Link>
+                <div className="border-t border-gray-200"></div>
+                <button
+                  onClick={async () => {
+                    await deleteCookie(PATIENT_TOKEN_KEY);
+                    window.location.reload();
+                  }}
+                  className="flex items-center space-x-2 text-red-500 cursor-pointer rounded-lg font-semibold transition-all hover:bg-red-50 px-3 py-2"
+                >
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </>
             ) : (
               <>
                 <div

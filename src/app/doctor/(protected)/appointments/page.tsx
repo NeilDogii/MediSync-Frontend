@@ -1,73 +1,148 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import SidebarDoctor from "@/components/DoctorComponents/SidebarDoctor"
-
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-
+import React, { useState, useEffect } from "react";
+import SidebarDoctor from "@/components/DoctorComponents/SidebarDoctor";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog"
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { CalendarDays, Clock } from "lucide-react";
+import { Appointment } from "@/@types/appointment";
+import {
+  fetchAppointments,
+  fetchMeetingToken,
+  updateAppointment,
+} from "@/utils/requests/appointment/appointments";
+import { getCookie } from "@/utils/cookie";
 
-import { CalendarDays, Clock } from "lucide-react"
+const statusColors: Record<string, string> = {
+  SCHEDULED: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-green-100 text-green-700",
+  CANCELLED: "bg-red-100 text-red-700",
+  RESCHEDULED: "bg-yellow-100 text-yellow-700",
+};
 
-type Appointment = {
-  id: string
-  patient: string
-  initials: string
-  purpose: string
-  time: string
-  date: string
-  status: "Upcoming" | "Completed" | "Cancelled"
-}
-
-const sampleAppointments: Appointment[] = [
-  { id: "1", patient: "Amit Sharma", initials: "AS", purpose: "General Checkup", time: "9:30 AM", date: "2025-02-12", status: "Upcoming" },
-  { id: "2", patient: "Sara Kapoor", initials: "SK", purpose: "Blood Report Review", time: "11:00 AM", date: "2025-02-12", status: "Upcoming" },
-  { id: "3", patient: "John Mathew", initials: "JM", purpose: "Follow-up Consultation", time: "1:00 PM", date: "2025-02-11", status: "Completed" },
-  { id: "4", patient: "Anjali Rao", initials: "AR", purpose: "Skin Allergy", time: "3:15 PM", date: "2025-02-10", status: "Cancelled" },
-  { id: "5", patient: "Rohan Verma", initials: "RV", purpose: "Heart Checkup", time: "4:45 PM", date: "2025-02-12", status: "Upcoming" },
-]
-
-const statusColors: Record<Appointment["status"], string> = {
-  Upcoming: "bg-blue-100 text-blue-700",
-  Completed: "bg-green-100 text-green-700",
-  Cancelled: "bg-red-100 text-red-700",
-}
+const statusLabels: Record<string, string> = {
+  SCHEDULED: "Upcoming",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+  RESCHEDULED: "Rescheduled",
+};
 
 export default function MyAppointmentsPage() {
-  const [selected, setSelected] = useState<Appointment | null>(null)
-  const [open, setOpen] = useState(false)
+  const [appointments, setAppointments] = useState<Appointment[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Appointment | null>(null);
+  const [open, setOpen] = useState(false);
+  const [doctorId, setDoctorId] = useState<number | null>(null);
 
-  const upcoming = sampleAppointments.filter(a => a.status === "Upcoming")
-  const completed = sampleAppointments.filter(a => a.status === "Completed")
-  const cancelled = sampleAppointments.filter(a => a.status === "Cancelled")
+  // Extract doctor ID from JWT token
+  const extractDoctorIdFromToken = (token: string): number | null => {
+    try {
+      const parts = token.split(".");
+      if (parts.length !== 3) {
+        console.error("Invalid JWT token format");
+        return null;
+      }
+      const payload = JSON.parse(atob(parts[1]));
+      return payload.id || payload.doctorId || payload.userId || null;
+    } catch (error) {
+      console.error("Error extracting doctor ID from token:", error);
+      return null;
+    }
+  };
 
-  const handleView = (appt: Appointment) => {
-    setSelected(appt)
-    setOpen(true)
-  }
+  useEffect(() => {
+    const loadDoctorId = async () => {
+      const token = await getCookie("__doctor_token__");
+      if (token) {
+        const id = extractDoctorIdFromToken(token);
+        if (id) {
+          setDoctorId(id);
+        }
+      }
+    };
+    loadDoctorId();
+  }, []);
+
+  useEffect(() => {
+    if (doctorId) {
+      const loadAppointments = async () => {
+        setLoading(true);
+        const data = await fetchAppointments({ doctorId });
+        console.log(data);
+        setAppointments(data);
+        setLoading(false);
+      };
+      loadAppointments();
+    }
+  }, [doctorId]);
+
+  const handleStatusChange = async (
+    appointment: Appointment,
+    newStatus: string
+  ) => {
+    const updated = await updateAppointment({
+      appointmentId: appointment.id,
+      data: { status: newStatus },
+    });
+    if (updated) {
+      if (!appointments) return;
+      setAppointments(
+        appointments.map((a) =>
+          a.id === appointment.id ? { ...a, status: newStatus } : a
+        )
+      );
+      setOpen(false);
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const groupedAppointments = {
+    SCHEDULED: appointments?.filter((a) => a.status === "SCHEDULED") || [],
+    COMPLETED: appointments?.filter((a) => a.status === "COMPLETED") || [],
+    CANCELLED: appointments?.filter((a) => a.status === "CANCELLED") || [],
+  };
+
+  const startMeeting = async (appointmentId: number) => {
+    const { token } = await fetchMeetingToken({
+      appointmentId,
+      type: "doctor",
+    });
+    if (!token) return alert("Error starting meeting. Please try again.");
+    window.open(`/conference?token=${token}`, "_blank");
+  };
 
   const Section = ({
     title,
-    items
+    items,
   }: {
-    title: string
-    items: Appointment[]
+    title: string;
+    items: Appointment[];
   }) => (
     <div className="mt-10">
       <h2 className="text-xl font-semibold mb-4">{title}</h2>
@@ -80,97 +155,177 @@ export default function MyAppointmentsPage() {
         {items.map((appt) => (
           <Card key={appt.id} className="shadow-sm">
             <CardContent className="p-5 flex items-center justify-between">
-              
               {/* Patient Info */}
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold">
-                  {appt.initials}
+                  {appt.patient?.name?.charAt(0) || "P"}
                 </div>
 
                 <div>
-                  <p className="text-lg font-semibold">{appt.patient}</p>
-                  <p className="text-sm text-gray-500">{appt.purpose}</p>
+                  <p className="text-lg font-semibold">
+                    {appt.patient?.name || "Unknown Patient"}
+                  </p>
+                  <p className="text-sm text-gray-500">{appt.condition}</p>
                 </div>
               </div>
 
               {/* Date + Time */}
               <div className="flex flex-col text-gray-600 text-sm">
                 <div className="flex items-center gap-1">
-                  <Clock size={16} /> {appt.time}
+                  <Clock size={16} /> {formatTime(appt.date)}
                 </div>
                 <div className="flex items-center gap-1 mt-1">
-                  <CalendarDays size={16} /> {appt.date}
+                  <CalendarDays size={16} /> {formatDate(appt.date)}
                 </div>
               </div>
 
               {/* Status */}
               <Badge className={`${statusColors[appt.status]} px-3 py-1`}>
-                {appt.status}
+                {statusLabels[appt.status]}
               </Badge>
 
-              {/* View Button */}
-              <Button
-                onClick={() => handleView(appt)}
-                className="bg-[#0077B6] hover:bg-[#005f8c]"
-              >
-                View
-              </Button>
+              <div className="flex items-center gap-3">
+                {/* JOIN MEET BUTTON */}
+                <Button
+                  onClick={() => {
+                    startMeeting(appt.id);
+                  }}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Join Meeting
+                </Button>
 
+                {/* View Button */}
+                <Button
+                  onClick={() => {
+                    setSelected(appt);
+                    setOpen(true);
+                  }}
+                  className="bg-[#0077B6] hover:bg-[#005f8c]"
+                >
+                  View
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
     </div>
-  )
+  );
+
+  if (loading) {
+    return (
+      <div className="flex">
+        <SidebarDoctor />
+        <div className="ml-64 min-h-screen p-8 bg-[#D2F0F6] flex items-center justify-center w-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0077B6]"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <SidebarDoctor />
 
       <div className="ml-64 min-h-screen p-8 bg-[#D2F0F6]">
-
         <h1 className="text-3xl font-bold text-gray-900">My Appointments</h1>
         <p className="text-gray-600 mb-6">
           View and manage all your upcoming and past consultations.
         </p>
 
         <Card className="p-6 shadow-lg">
-
-          <Section title="Upcoming Appointments" items={upcoming} />
-          <Section title="Completed Appointments" items={completed} />
-          <Section title="Cancelled Appointments" items={cancelled} />
-
+          <Section
+            title="Upcoming Appointments"
+            items={groupedAppointments.SCHEDULED}
+          />
+          <Section
+            title="Completed Appointments"
+            items={groupedAppointments.COMPLETED}
+          />
+          <Section
+            title="Cancelled Appointments"
+            items={groupedAppointments.CANCELLED}
+          />
         </Card>
 
         {/* VIEW MODAL */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="rounded-2xl">
             <DialogHeader>
-              <DialogTitle>{selected?.patient}</DialogTitle>
+              <DialogTitle>{selected?.patient?.name}</DialogTitle>
               <DialogDescription>
-                Appointment details for the selected patient.
+                Appointment details and patient information.
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-2 text-gray-800 mt-3">
-              <p><strong>Purpose:</strong> {selected?.purpose}</p>
-              <p><strong>Time:</strong> {selected?.time}</p>
-              <p><strong>Date:</strong> {selected?.date}</p>
-              <p><strong>Status:</strong> {selected?.status}</p>
+            <div className="space-y-3 text-gray-800 mt-3">
+              <div>
+                <p className="text-sm text-gray-500">Condition</p>
+                <p className="font-semibold">{selected?.condition}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Date & Time</p>
+                <p className="font-semibold">
+                  {selected &&
+                    `${formatDate(selected.date)}, ${formatTime(
+                      selected.date
+                    )}`}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Patient Email</p>
+                <p className="font-semibold">{selected?.patient?.email}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Patient Phone</p>
+                <p className="font-semibold">{selected?.patient?.phone}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Patient Age & Gender</p>
+                <p className="font-semibold">
+                  {selected?.patient?.age || "N/A"} years,{" "}
+                  {selected?.patient?.gender || "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Payment Status</p>
+                <p className="font-semibold">
+                  {selected?.isPaid ? "✅ Paid" : "❌ Not Paid"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Status</p>
+                <p className="font-semibold">
+                  {statusLabels[selected?.status || ""]}
+                </p>
+              </div>
             </div>
 
-            <DialogFooter>
-              <Button
-                onClick={() => setOpen(false)}
-                className="bg-red-500 hover:bg-red-600 text-white"
-              >
+            <DialogFooter className="flex gap-2">
+              {selected?.status === "SCHEDULED" && (
+                <>
+                  <Button
+                    onClick={() => handleStatusChange(selected, "COMPLETED")}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Mark Completed
+                  </Button>
+                  <Button
+                    onClick={() => handleStatusChange(selected, "CANCELLED")}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
+              <Button onClick={() => setOpen(false)} className="bg-gray-400">
                 Close
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
       </div>
     </>
-  )
+  );
 }

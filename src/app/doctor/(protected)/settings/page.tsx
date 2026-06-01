@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import SidebarDoctor from "@/components/DoctorComponents/SidebarDoctor"
-import { Mail, Phone, User, Lock, Bell } from "lucide-react"
+import React, { useState } from "react";
+import SidebarDoctor from "@/components/DoctorComponents/SidebarDoctor";
+import { Mail, Phone, User, Lock } from "lucide-react";
 
 export default function SettingsPage() {
   const [form, setForm] = useState({
@@ -17,31 +17,31 @@ export default function SettingsPage() {
       reports: true,
       reminders: false,
     },
-  })
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   return (
     <>
       <SidebarDoctor />
 
       <div className="ml-64 min-h-screen p-8 bg-[#D2F0F6]">
-
         {/* Heading */}
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mb-8">Manage your profile, account and notification preferences.</p>
+        <p className="text-gray-600 mb-8">
+          Manage your profile, account and notification preferences.
+        </p>
 
         <div className="bg-white rounded-3xl shadow-xl p-8 max-w-4xl">
-
-          
           {/* PROFILE INFORMATION  */}
-        
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Profile Information</h2>
+
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Profile Information
+          </h2>
 
           <div className="grid grid-cols-2 gap-6 max-[700px]:grid-cols-1">
-
             {/* Name */}
             <div>
               <label className="text-sm text-gray-600">Full Name</label>
@@ -86,19 +86,18 @@ export default function SettingsPage() {
                 />
               </div>
             </div>
-
           </div>
 
           {/* Separator */}
           <div className="border-b my-8"></div>
 
-          
           {/* CHANGE PASSWORD AREA */}
-         
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Change Password</h2>
+
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Change Password
+          </h2>
 
           <div className="grid grid-cols-2 gap-6 max-[700px]:grid-cols-1">
-
             {/* Current Password */}
             <div>
               <label className="text-sm text-gray-600">Current Password</label>
@@ -143,7 +142,6 @@ export default function SettingsPage() {
                 />
               </div>
             </div>
-
           </div>
 
           {/* Separator */}
@@ -152,10 +150,11 @@ export default function SettingsPage() {
           {/* ===================== */}
           {/* NOTIFICATIONS AREA */}
           {/* ===================== */}
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Notification Preferences</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Notification Preferences
+          </h2>
 
           <div className="space-y-4">
-
             {/* Appointments */}
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -164,7 +163,10 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    notifications: { ...form.notifications, appointments: e.target.checked },
+                    notifications: {
+                      ...form.notifications,
+                      appointments: e.target.checked,
+                    },
                   })
                 }
               />
@@ -179,7 +181,10 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    notifications: { ...form.notifications, reports: e.target.checked },
+                    notifications: {
+                      ...form.notifications,
+                      reports: e.target.checked,
+                    },
                   })
                 }
               />
@@ -194,22 +199,23 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    notifications: { ...form.notifications, reminders: e.target.checked },
+                    notifications: {
+                      ...form.notifications,
+                      reminders: e.target.checked,
+                    },
                   })
                 }
               />
               <span className="text-gray-700">Daily Summary Reminders</span>
             </label>
-
           </div>
 
           {/* Save Button */}
           <button className="mt-10 px-6 py-3 bg-[#0077B6] text-white rounded-lg hover:bg-[#005f8c] transition shadow-md">
             Save Changes
           </button>
-
         </div>
       </div>
     </>
-  )
+  );
 }

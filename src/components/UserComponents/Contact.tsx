@@ -1,53 +1,55 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
+import Image from "next/image";
+import React, { useState } from "react";
 
 const topics = [
-  { value: 'general', label: 'General Inquiry' },
-  { value: 'support', label: 'Support' },
-  { value: 'feedback', label: 'Feedback' },
-  { value: 'other', label: 'Other' },
-]
+  { value: "general", label: "General Inquiry" },
+  { value: "support", label: "Support" },
+  { value: "feedback", label: "Feedback" },
+  { value: "other", label: "Other" },
+];
 
 export default function Contact() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    topic: '',
-    message: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    topic: "",
+    message: "",
     acceptTerms: false,
-  })
+  });
 
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement
-    setFormData(prev => ({
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }))
-  }
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
   const handleSelect = (value: string) => {
-    setFormData(prev => ({ ...prev, topic: value }))
-    setDropdownOpen(false)
-  }
+    setFormData((prev) => ({ ...prev, topic: value }));
+    setDropdownOpen(false);
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    console.log('Form submitted:', formData)
-  }
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+  };
 
   return (
     <div className="relative w-full flex items-center justify-center overflow-hidden py-20 px-4 sm:px-6 lg:px-8">
       {/* Background Image */}
-      <img
+      <Image
         src="/assets/contactBG.jpg"
         alt="Hospital background"
+        fill
         className="absolute inset-0 w-full h-full object-cover"
       />
 
@@ -65,7 +67,7 @@ export default function Contact() {
             </p>
             <h1 className="text-2xl font-bold text-white mb-1">Contact Us</h1>
             <p className="text-gray-200 text-xs md:text-sm max-w-sm mx-auto">
-              We'd love to hear from you. Please fill out the form below.
+              We&apos;d love to hear from you. Please fill out the form below.
             </p>
           </div>
 
@@ -142,15 +144,15 @@ export default function Contact() {
                 className="w-full px-3 py-2 border border-white/40 rounded-lg bg-white/10 text-white cursor-pointer flex justify-between items-center"
               >
                 {formData.topic
-                  ? topics.find(t => t.value === formData.topic)?.label
-                  : 'Select one...'}
+                  ? topics.find((t) => t.value === formData.topic)?.label
+                  : "Select one..."}
                 <span className="ml-2">&#9662;</span>
               </div>
 
               {/* Dropdown menu */}
               {dropdownOpen && (
                 <div className="absolute z-20 w-full mt-1 bg-white text-[#03045E] rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                  {topics.map(t => (
+                  {topics.map((t) => (
                     <div
                       key={t.value}
                       onClick={() => handleSelect(t.value)}
@@ -187,7 +189,9 @@ export default function Contact() {
                 onChange={handleChange}
                 className="w-4 h-4 text-[#00B4D8] border-white/40 rounded focus:border-[#00B4D8] bg-white/10"
               />
-              <label className="ml-2 text-white text-xs">I accept the terms</label>
+              <label className="ml-2 text-white text-xs">
+                I accept the terms
+              </label>
             </div>
 
             {/* Submit Button */}
@@ -203,5 +207,5 @@ export default function Contact() {
         </div>
       </div>
     </div>
-  )
+  );
 }

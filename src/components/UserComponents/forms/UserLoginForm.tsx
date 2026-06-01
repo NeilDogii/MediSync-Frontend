@@ -9,7 +9,6 @@ import GoogleLoginBtn from "../GoogleLoginBtn";
 import { PatientLogin } from "@/utils/requests/auth/patient";
 import { setCookie } from "@/utils/cookie";
 import { PATIENT_TOKEN_KEY } from "@/constants/keys";
-import { useRouter } from "next/navigation";
 
 export default function UserLoginForm({
   togglePopupType,
@@ -17,7 +16,6 @@ export default function UserLoginForm({
   togglePopupType?: (type: "LOGIN" | "REGISTER") => void;
 }) {
   const [showPassword, setShowPassword] = useState(false);
-  const { refresh } = useRouter();
   return (
     <div className="p-6">
       {/* Header */}
@@ -47,7 +45,9 @@ export default function UserLoginForm({
           } else if (res.token) {
             alert("Login successful!: ");
             await setCookie(PATIENT_TOKEN_KEY, res.token);
-            refresh();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           }
         }}
         className="space-y-4"
