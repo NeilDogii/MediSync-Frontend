@@ -1,5 +1,8 @@
+import SidebarDoctor from "@/components/DoctorComponents/SidebarDoctor";
 import { DOCTOR_TOKEN_KEY } from "@/constants/keys";
 import { getCookie } from "@/utils/cookie";
+import { validateToken } from "@/utils/requests/auth/jwt";
+import { fetchDoctor } from "@/utils/requests/misc/doctor";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -17,5 +20,18 @@ export default async function RootLayout({
   if (!adminToken) {
     redirect("/doctor/login");
   }
-  return children;
+  const tokenPayload = await validateToken(adminToken as string);
+  if (!tokenPayload) {
+    redirect("/doctor/login");
+  }
+  const doctorData = await fetchDoctor(parseInt(tokenPayload.payload.userId));
+  if (!doctorData) {
+    redirect("/doctor/login");
+  }
+  return (
+    <main>
+      <SidebarDoctor doctorData={doctorData} />
+      {children}
+    </main>
+  );
 }

@@ -25,6 +25,13 @@ export interface Appointment {
     gender: string;
     phone: string;
   }>;
+  report?: {
+    condition: string;
+    fullReport: string;
+    remedies: string;
+    date: string;
+    id?: string;
+  }
 }
 
 declare global {
@@ -34,7 +41,7 @@ declare global {
 }
 
 export interface RazorpayConstructor {
-  new (options: RazorpayOptions): RazorpayInstance;
+  new(options: RazorpayOptions): RazorpayInstance;
 }
 
 export interface RazorpayInstance {

@@ -2,6 +2,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function BookPageBG() {
   const router = useRouter();
@@ -67,9 +68,12 @@ export default function BookPageBG() {
             well-being.
           </p>
           <div className="flex sm:flex-row justify-center lg:justify-start gap-3 pt-2">
-            <button className="bg-[#0077B6] hover:bg-[#075985] text-white font-semibold px-6 py-2.5 rounded-full transition-all shadow-lg text-sm">
+            <Link
+              href="/contact"
+              className="bg-[#0077B6] hover:bg-[#075985] text-white font-semibold px-6 py-2.5 rounded-full transition-all shadow-lg text-sm"
+            >
               Get Quote Now
-            </button>
+            </Link>
             <button className="border-2 border-white hover:bg-white hover:text-black text-white font-semibold px-6 py-2.5 rounded-full transition-all text-sm">
               Learn More
             </button>

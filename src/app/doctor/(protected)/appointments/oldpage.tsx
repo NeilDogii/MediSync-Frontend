@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +13,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { CalendarDays, CheckCheck, XIcon } from "lucide-react";
+import { CalendarDays, Clock } from "lucide-react";
 import { Appointment } from "@/@types/appointment";
 import {
   fetchAppointments,
@@ -21,7 +23,6 @@ import {
   updateReport,
 } from "@/utils/requests/appointment/appointments";
 import { getCookie } from "@/utils/cookie";
-import DoctorLoadingScreen from "@/components/DoctorComponents/DoctorLoadingScreen";
 
 const statusColors: Record<string, string> = {
   SCHEDULED: "bg-blue-100 text-blue-700",
@@ -218,203 +219,119 @@ export default function MyAppointmentsPage() {
     title: string;
     items: Appointment[];
   }) => (
-    <div className="mb-10">
-      <h2 className="text-2xl font-bold text-slate-900 mb-5">{title}</h2>
+    <div className="mt-10">
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
 
-      {items.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center text-slate-500">
-          No appointments found.
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {items.map((appt) => (
-            <AppointmentRow key={appt.id} appointment={appt} />
-          ))}
-        </div>
+      {items.length === 0 && (
+        <p className="text-gray-500 text-sm">No {title.toLowerCase()}.</p>
       )}
+
+      <div className="space-y-4">
+        {items.map((appt) => (
+          <Card key={appt.id} className="shadow-sm">
+            <CardContent className="p-5 flex items-center justify-between">
+              {/* Patient Info */}
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold">
+                  {appt.patient?.name?.charAt(0) || "P"}
+                </div>
+
+                <div>
+                  <p className="text-lg font-semibold">
+                    {appt.patient?.name || "Unknown Patient"}
+                  </p>
+                  <p className="text-sm text-gray-500">{appt.condition}</p>
+                </div>
+              </div>
+
+              {/* Date + Time */}
+              <div className="flex flex-col text-gray-600 text-sm">
+                <div className="flex items-center gap-1">
+                  <Clock size={16} /> {formatTime(appt.date)}
+                </div>
+                <div className="flex items-center gap-1 mt-1">
+                  <CalendarDays size={16} /> {formatDate(appt.date)}
+                </div>
+              </div>
+
+              {/* Status */}
+              <Badge className={`${statusColors[appt.status]} px-3 py-1`}>
+                {statusLabels[appt.status]}
+              </Badge>
+
+              <div className="flex items-center gap-3">
+                {/* JOIN MEET BUTTON */}
+                <Button
+                  onClick={() => {
+                    startMeeting(appt.id);
+                  }}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Join Meeting
+                </Button>
+
+                {/* REPORT BUTTON */}
+                <Button
+                  onClick={() => handleReportOpen(appt)}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {appt.report && appt.report.condition
+                    ? "Update Report"
+                    : "Attach Report"}
+                </Button>
+
+                {/* View Button */}
+                <Button
+                  onClick={() => {
+                    setSelected(appt);
+                    setOpen(true);
+                  }}
+                  className="bg-[#0077B6] hover:bg-[#005f8c]"
+                >
+                  View
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 
-  const AppointmentRow = ({ appointment }: { appointment: Appointment }) => {
-    return (
-      <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hover:shadow-lg transition-all">
-        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
-          {/* Left */}
-
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] flex items-center justify-center text-white font-bold text-xl shadow-lg">
-              {appointment.patient?.name?.charAt(0)}
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg text-slate-900">
-                {appointment.patient?.name}
-              </h3>
-
-              <p className="text-slate-500">{appointment.condition}</p>
-            </div>
-          </div>
-
-          {/* Center */}
-
-          <div className="flex flex-wrap gap-6">
-            <div>
-              <p className="text-xs uppercase text-slate-400">Date</p>
-
-              <p className="font-semibold">{formatDate(appointment.date)}</p>
-            </div>
-
-            <div>
-              <p className="text-xs uppercase text-slate-400">Time</p>
-
-              <p className="font-semibold">{formatTime(appointment.date)}</p>
-            </div>
-
-            <div>
-              <p className="text-xs uppercase text-slate-400">Payment</p>
-
-              <p className="font-semibold">
-                {appointment.isPaid ? "Paid" : "Pending"}
-              </p>
-            </div>
-          </div>
-
-          {/* Right */}
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <Badge className={`${statusColors[appointment.status]}`}>
-              {statusLabels[appointment.status]}
-            </Badge>
-
-            <Button
-              onClick={() => startMeeting(appointment.id)}
-              className="rounded-xl bg-green-600 hover:bg-green-700"
-            >
-              Join Meeting
-            </Button>
-
-            <Button
-              onClick={() => handleReportOpen(appointment)}
-              className="rounded-xl bg-purple-600 hover:bg-purple-700"
-            >
-              {appointment.report ? "Update Report" : "Add Report"}
-            </Button>
-
-            <Button
-              onClick={() => {
-                setSelected(appointment);
-                setOpen(true);
-              }}
-              className="rounded-xl bg-[#0B6CB8] hover:bg-[#095a9c]"
-            >
-              View
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-  function StatCard({
-    title,
-    value,
-    icon,
-  }: {
-    title: string;
-    value: number | string;
-    icon: React.ReactNode;
-  }) {
-    return (
-      <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-sm transition-all duration-300">
-        {/* Accent */}
-        <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-[#0B6CB8] to-[#38BDF8]" />
-
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-500">{title}</p>
-
-            <h3 className="mt-2 text-4xl font-bold text-slate-900 leading-none">
-              {value}
-            </h3>
-          </div>
-
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] text-white shadow-md">
-            {icon}
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-emerald-500" />
-          <span className="text-xs font-medium text-slate-500">
-            Updated today
-          </span>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
-    return <DoctorLoadingScreen />;
+    return (
+      <div className="flex">
+        <div className="ml-64 min-h-screen p-8 bg-[#D2F0F6] flex items-center justify-center w-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0077B6]"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="ml-64 min-h-screen bg-slate-50 p-8">
-        {/* Hero */}
-        <div className="mb-8">
-          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8 shadow-xl">
-            <div className="relative z-10">
-              <p className="text-blue-100 text-sm mb-2">Doctor Portal</p>
+      <div className="ml-64 min-h-screen p-8 bg-[#D2F0F6]">
+        <h1 className="text-3xl font-bold text-gray-900">My Appointments</h1>
+        <p className="text-gray-600 mb-6">
+          View and manage all your upcoming and past consultations.
+        </p>
 
-              <h1 className="text-4xl font-bold text-white">My Appointments</h1>
-
-              <p className="text-blue-100 mt-2">
-                Manage consultations, reports and patient visits.
-              </p>
-            </div>
-
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
-            <div className="absolute right-20 bottom-0 h-24 w-24 rounded-full bg-white/10" />
-          </div>
-        </div>
-
-        {/* Overview Cards */}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard
-            title="Upcoming"
-            value={groupedAppointments.SCHEDULED.length}
-            icon={<CalendarDays size={24} />}
+        <Card className="p-6 shadow-lg">
+          <Section
+            title="Upcoming Appointments"
+            items={groupedAppointments.SCHEDULED}
           />
-
-          <StatCard
-            title="Completed"
-            value={groupedAppointments.COMPLETED.length}
-            icon={<CheckCheck size={24} />}
+          <Section
+            title="Completed Appointments"
+            items={groupedAppointments.COMPLETED}
           />
-
-          <StatCard
-            title="Cancelled"
-            value={groupedAppointments.CANCELLED.length}
-            icon={<XIcon size={24} />}
+          <Section
+            title="Cancelled Appointments"
+            items={groupedAppointments.CANCELLED}
           />
-        </div>
+        </Card>
 
-        <Section
-          title="Upcoming Appointments"
-          items={groupedAppointments.SCHEDULED}
-        />
-
-        <Section
-          title="Completed Appointments"
-          items={groupedAppointments.COMPLETED}
-        />
-
-        <Section
-          title="Cancelled Appointments"
-          items={groupedAppointments.CANCELLED}
-        />
-
-        {/* Existing Modals */}
+        {/* VIEW MODAL */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="rounded-2xl">
             <DialogHeader>

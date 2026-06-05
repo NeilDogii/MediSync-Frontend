@@ -15,12 +15,14 @@ import {
   AlertCircle,
   XCircle,
   Stethoscope,
+  Download,
 } from "lucide-react";
 
 export default function AppointmentsPage({ userId }: { userId: string }) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "upcoming" | "completed">("all");
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchAppointments();
@@ -40,7 +42,7 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -51,6 +53,193 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
       console.error("Error fetching appointments:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const downloadReportAsPDF = async (appointment: Appointment) => {
+    if (!appointment.report) {
+      alert("No report available for this appointment");
+      return;
+    }
+
+    setDownloadingId(appointment.id);
+
+    try {
+      const { jsPDF } = await import("jspdf");
+
+      const reportDate = new Date(appointment.report.date).toLocaleDateString(
+        "en-US",
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        },
+      );
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      let y = 0;
+
+      // =================================
+      // HEADER
+      // =================================
+
+      pdf.setFillColor(15, 108, 189);
+      pdf.rect(0, 0, pageWidth, 22, "F");
+
+      pdf.setTextColor(255, 255, 255);
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(20);
+      pdf.text("MEDISYNC", 14, 14);
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(9);
+      pdf.text("Professional Medical Consultation Report", 14, 19);
+
+      y = 30;
+
+      // =================================
+      // INFO TABLE
+      // =================================
+
+      pdf.setDrawColor(220, 225, 230);
+      pdf.setFillColor(248, 250, 252);
+
+      pdf.roundedRect(10, y, pageWidth - 20, 28, 2, 2, "FD");
+
+      // Vertical divider
+      pdf.line(pageWidth / 2, y, pageWidth / 2, y + 28);
+
+      // Horizontal divider
+      pdf.line(10, y + 14, pageWidth - 10, y + 14);
+
+      pdf.setFontSize(8);
+      pdf.setTextColor(120, 120, 120);
+      pdf.setFont("helvetica", "bold");
+
+      pdf.text("PATIENT", 14, y + 6);
+      pdf.text("DOCTOR", pageWidth / 2 + 4, y + 6);
+      pdf.text("DATE", 14, y + 20);
+      pdf.text("REPORT ID", pageWidth / 2 + 4, y + 20);
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+
+      pdf.text(appointment.patient?.name || "N/A", 14, y + 11);
+
+      pdf.text(appointment.doctor?.name || "N/A", pageWidth / 2 + 4, y + 11);
+
+      pdf.text(reportDate, 14, y + 25);
+
+      pdf.text(`${appointment.report.id}`, pageWidth / 2 + 4, y + 25);
+
+      y += 36;
+
+      // =================================
+      // SECTION HELPER
+      // =================================
+
+      const drawSection = (
+        title: string,
+        content: string,
+        bgColor: [number, number, number],
+      ) => {
+        const lines = pdf.splitTextToSize(content || "N/A", pageWidth - 24);
+
+        const contentHeight = Math.max(12, lines.length * 4.2 + 6);
+
+        // page break
+        if (y + contentHeight + 15 > pageHeight - 20) {
+          pdf.addPage();
+          y = 15;
+        }
+
+        // title strip
+        pdf.setFillColor(15, 108, 189);
+        pdf.rect(10, y, pageWidth - 20, 6, "F");
+
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(9);
+
+        pdf.text(title, 13, y + 4.2);
+
+        y += 6;
+
+        // content box
+        pdf.setFillColor(...bgColor);
+        pdf.setDrawColor(225, 225, 225);
+
+        pdf.rect(10, y, pageWidth - 20, contentHeight, "FD");
+
+        pdf.setTextColor(40, 40, 40);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(9);
+
+        pdf.text(lines, 13, y + 5);
+
+        y += contentHeight + 5;
+      };
+
+      // =================================
+      // REPORT CONTENT
+      // =================================
+
+      drawSection(
+        "PATIENT PROVIDED SYMPTOMS",
+        appointment.condition || "N/A",
+        [250, 250, 250],
+      );
+
+      drawSection(
+        "DOCTOR ASSESSMENT",
+        appointment.report.condition || "N/A",
+        [239, 246, 255],
+      );
+
+      drawSection(
+        "DETAILED MEDICAL REPORT",
+        appointment.report.fullReport || "N/A",
+        [255, 255, 255],
+      );
+
+      drawSection(
+        "RECOMMENDED REMEDIES & CARE PLAN",
+        appointment.report.remedies || "N/A",
+        [240, 253, 244],
+      );
+
+      // =================================
+      // FOOTER
+      // =================================
+
+      const footerY = pageHeight - 10;
+
+      pdf.setDrawColor(220, 220, 220);
+      pdf.line(10, footerY - 4, pageWidth - 10, footerY - 4);
+
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(120, 120, 120);
+
+      pdf.text("Generated by MediSync Healthcare Platform", 10, footerY);
+
+      pdf.text(`${appointment.report.id}`, pageWidth - 60, footerY);
+
+      pdf.save(`Medical-Report-${appointment.patient?.name || "Patient"}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF");
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -186,7 +375,7 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
                                   year: "numeric",
                                   month: "long",
                                   day: "numeric",
-                                }
+                                },
                               )}
                             </span>
                           </div>
@@ -234,7 +423,7 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
                         {/* Status Badge */}
                         <div
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border ${getStatusColor(
-                            appointment.status
+                            appointment.status,
                           )}`}
                         >
                           {getStatusIcon(appointment.status)}
@@ -263,6 +452,25 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
                           <Video size={18} />
                           Join Meeting
                         </button>
+
+                        {/* Download Report Button */}
+                        <button
+                          onClick={() => downloadReportAsPDF(appointment)}
+                          disabled={
+                            !appointment.report ||
+                            downloadingId === appointment.id
+                          }
+                          className={`px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
+                            appointment.report
+                              ? "bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white hover:shadow-lg"
+                              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          }`}
+                        >
+                          <Download size={18} />
+                          {downloadingId === appointment.id
+                            ? "Generating..."
+                            : "Download Report"}
+                        </button>
                       </div>
                     </div>
 
@@ -285,7 +493,7 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
                           <p className="text-gray-600 mb-1">Booked On</p>
                           <p className="font-semibold text-gray-800">
                             {new Date(
-                              appointment.createdAt
+                              appointment.createdAt,
                             ).toLocaleDateString()}
                           </p>
                         </div>

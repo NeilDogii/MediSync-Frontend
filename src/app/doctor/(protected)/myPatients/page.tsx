@@ -1,18 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import SidebarDoctor from "@/components/DoctorComponents/SidebarDoctor";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Eye } from "lucide-react";
 import { Patient } from "@/@types/patient";
 import { fetchDoctorAppointments } from "@/utils/requests/appointment/appointments";
 import {
@@ -23,6 +14,16 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { getCookie } from "@/utils/cookie";
+import {
+  Search,
+  Users,
+  UserCheck,
+  Calendar,
+  Eye,
+  Mail,
+  Phone,
+  Dot,
+} from "lucide-react";
 
 interface PatientWithDetails extends Patient {
   condition?: string;
@@ -116,164 +117,254 @@ export default function MyPatients() {
 
   // Filter based on search input
   const filteredPatients = patients.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
+    p.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <>
-      <div className="flex">
-        <SidebarDoctor />
+      <div className="ml-64 min-h-screen bg-slate-50 p-8">
+        {/* Hero */}
 
-        <div className="flex-1 ml-64 min-h-screen bg-[#D2F0F6] p-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              My Patients
-            </h1>
-            <p className="text-gray-600">Manage and view all your patients</p>
+        <div className="mb-8">
+          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8 shadow-xl">
+            <div className="relative z-10">
+              <p className="text-blue-100 text-sm mb-2">Doctor Portal</p>
+
+              <h1 className="text-4xl font-bold text-white">My Patients</h1>
+
+              <p className="text-blue-100 mt-2">
+                View and manage all patient records and visits.
+              </p>
+            </div>
+
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
+            <div className="absolute right-20 bottom-0 h-24 w-24 rounded-full bg-white/10" />
           </div>
+        </div>
 
-          {/* Search Bar */}
-          <div className="mb-6">
+        {/* Overview */}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <StatCard
+            title="Total Patients"
+            value={patients.length}
+            icon={<Users size={22} />}
+          />
+
+          <StatCard
+            title="Active Patients"
+            value={patients.length}
+            icon={<UserCheck size={22} />}
+          />
+
+          <StatCard
+            title="Recent Visits"
+            value={patients.filter((p) => p.lastVisit).length}
+            icon={<Calendar size={22} />}
+          />
+        </div>
+
+        {/* Search */}
+
+        <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mb-8">
+          <div className="relative">
+            <Search
+              size={18}
+              className="absolute left-4 top-3.5 text-slate-400"
+            />
+
             <Input
-              placeholder="Search patients by name..."
+              placeholder="Search patients..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="max-w-md"
+              className="pl-11 h-12 rounded-2xl border-slate-200"
             />
           </div>
-
-          {/* Loading State */}
-          {loading ? (
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0077B6]"></div>
-            </div>
-          ) : filteredPatients.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">
-              <User className="mx-auto h-12 w-12 mb-4 opacity-50" />
-              <p>No patients found</p>
-            </div>
-          ) : (
-            /* Table */
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-[#0077B6]">
-                    <TableHead className="text-white">Patient Name</TableHead>
-                    <TableHead className="text-white">Age</TableHead>
-                    <TableHead className="text-white">Gender</TableHead>
-                    <TableHead className="text-white">Email</TableHead>
-                    <TableHead className="text-white">Phone</TableHead>
-                    <TableHead className="text-white">Last Visit</TableHead>
-                    <TableHead className="text-white">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPatients.map((patient) => (
-                    <TableRow key={patient.id} className="hover:bg-gray-50">
-                      <TableCell className="font-semibold">
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 rounded-full bg-[#0077B6] text-white flex items-center justify-center font-bold">
-                            {patient.name?.charAt(0) || "P"}
-                          </div>
-                          {patient.name}
-                        </div>
-                      </TableCell>
-                      <TableCell>{patient.age || "N/A"}</TableCell>
-                      <TableCell>{patient.gender || "N/A"}</TableCell>
-                      <TableCell className="text-sm">{patient.email}</TableCell>
-                      <TableCell className="text-sm">{patient.phone}</TableCell>
-                      <TableCell className="text-sm">
-                        {patient.lastVisit
-                          ? new Date(patient.lastVisit).toLocaleDateString(
-                              "en-IN"
-                            )
-                          : "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() => {
-                            setSelected(patient);
-                            setOpenDialog(true);
-                          }}
-                          className="gap-2 bg-[#0077B6] hover:bg-[#005f8c]"
-                          size="sm"
-                        >
-                          <Eye size={16} />
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
         </div>
+
+        {/* Loading */}
+
+        {loading ? (
+          <div className="flex justify-center py-24">
+            <div className="h-12 w-12 rounded-full border-b-2 border-[#0B6CB8] animate-spin" />
+          </div>
+        ) : filteredPatients.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-16 text-center">
+            <Users size={48} className="mx-auto text-slate-300 mb-4" />
+
+            <h3 className="font-semibold text-lg">No Patients Found</h3>
+
+            <p className="text-slate-500 mt-2">
+              No patients match your search.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5">
+            {filteredPatients.map((patient) => (
+              <div
+                key={patient.email}
+                className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hover:shadow-lg transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] flex items-center justify-center text-white text-xl font-bold shadow-lg capitalize">
+                      {patient.name?.charAt(0)}
+                    </div>
+
+                    <div>
+                      <h3 className="capitalize font-bold text-lg text-slate-900">
+                        {patient.name}
+                      </h3>
+
+                      <div className="flex gap-4 mt-1.5 text-sm text-slate-500">
+                        <span>{patient.age || "N/A"} yrs</span>
+
+                        <span>{patient.gender || "N/A"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      setSelected(patient);
+                      setOpenDialog(true);
+                    }}
+                    className="rounded-xl bg-[#0B6CB8] hover:bg-[#095a9c]"
+                  >
+                    <Eye size={16} />
+                  </Button>
+                </div>
+
+                <div className="border-t flex items-center gap-3   border-slate-100 mt-5 pt-4 space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Mail size={14} />
+                    {patient.email}
+                  </div>
+
+                  <Dot size={20} className="text-slate-400" />
+
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Phone size={14} />
+                    {patient.phone}
+                  </div>
+
+                  {patient.lastVisit && (
+                    <div className="text-sm ml-auto text-slate-500">
+                      Last Visit: {new Date(patient.lastVisit).toDateString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Patient Details Dialog */}
+      {/* Dialog */}
+
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="rounded-2xl">
+        <DialogContent className="max-w-xl rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-2xl">{selected?.name}</DialogTitle>
+
             <DialogDescription>
-              Patient information and details
+              Patient details and medical information.
             </DialogDescription>
           </DialogHeader>
 
           {selected && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-6 mt-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Age</p>
-                  <p className="font-semibold">{selected.age || "N/A"} years</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Gender</p>
-                  <p className="font-semibold">{selected.gender || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-semibold text-sm">{selected.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-semibold">{selected.phone}</p>
-                </div>
+                <DetailItem
+                  label="Age"
+                  value={`${selected.age || "N/A"} years`}
+                />
+
+                <DetailItem label="Gender" value={selected.gender || "N/A"} />
+
+                <DetailItem label="Email" value={selected.email} />
+
+                <DetailItem label="Phone" value={selected.phone} />
               </div>
 
               {selected.lastVisit && (
-                <div>
-                  <p className="text-sm text-gray-500">Last Visit</p>
-                  <p className="font-semibold">
-                    {new Date(selected.lastVisit).toLocaleDateString("en-IN", {
+                <DetailItem
+                  label="Last Visit"
+                  value={new Date(selected.lastVisit).toLocaleDateString(
+                    "en-IN",
+                    {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
-                    })}
-                  </p>
-                </div>
+                    },
+                  )}
+                />
               )}
 
               {selected.condition && (
-                <div>
-                  <p className="text-sm text-gray-500">Last Condition</p>
-                  <p className="font-semibold">{selected.condition}</p>
-                </div>
+                <DetailItem
+                  label="Recent Condition"
+                  value={selected.condition}
+                />
               )}
 
-              <div className="pt-4">
-                <Button
-                  onClick={() => setOpenDialog(false)}
-                  className="w-full bg-[#0077B6] hover:bg-[#005f8c]"
-                >
-                  Close
-                </Button>
-              </div>
+              <Button
+                onClick={() => setOpenDialog(false)}
+                className="w-full bg-[#0B6CB8]"
+              >
+                Close
+              </Button>
             </div>
           )}
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+function StatCard({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: number | string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-sm transition-all duration-300">
+      {/* Accent */}
+      <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-[#0B6CB8] to-[#38BDF8]" />
+
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{title}</p>
+
+          <h3 className="mt-2 text-4xl font-bold text-slate-900 leading-none">
+            {value}
+          </h3>
+        </div>
+
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] text-white shadow-md">
+          {icon}
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <div className="h-2 w-2 rounded-full bg-emerald-500" />
+        <span className="text-xs font-medium text-slate-500">
+          Updated today
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function DetailItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-sm text-slate-500">{label}</p>
+
+      <p className="font-semibold text-slate-900">{value}</p>
+    </div>
   );
 }

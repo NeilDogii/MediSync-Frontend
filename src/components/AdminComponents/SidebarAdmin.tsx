@@ -1,158 +1,170 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie } from "@/utils/cookie";
 import { ADMIN_TOKEN_KEY } from "@/constants/keys";
-import Image from "next/image";
+
 import {
-  AmbulanceIcon,
-  BellIcon,
-  BlocksIcon,
-  ChartSplineIcon,
-  ClipboardClock,
-  UserIcon,
+  LayoutDashboard,
+  LogOut,
+  ClipboardClockIcon,
+  UserCog2,
+  StethoscopeIcon,
+  UsersIcon,
+  SettingsIcon,
+  MessageSquareText,
 } from "lucide-react";
 
-const SidebarAdmin: React.FC = () => {
+const SidebarAdmin: React.FC<{
+  adminData: {
+    id: number;
+    username: string;
+  };
+}> = ({ adminData }) => {
   const pathname = usePathname();
   const { push } = useRouter();
 
-  const getLinkClass = (path: string) => {
-    return pathname === path
-      ? "block py-2 px-3 rounded-lg bg-gray-100"
-      : "block py-2 px-3 rounded-lg hover:bg-gray-100";
-  };
+  if (!pathname.startsWith("/admin")) {
+    return null;
+  }
+
+  const navItems = [
+    {
+      label: "Dashboard",
+      href: "/admin",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "Doctors",
+      href: "/admin/doctors",
+      icon: StethoscopeIcon,
+    },
+    {
+      label: "Patients",
+      href: "/admin/patients",
+      icon: UsersIcon,
+    },
+    {
+      label: "Reports",
+      href: "/admin/reports",
+      icon: ClipboardClockIcon,
+    },
+    {
+      label: "Contact Requests",
+      href: "/admin/contacts",
+      icon: MessageSquareText,
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+      icon: SettingsIcon,
+    },
+  ];
 
   return (
-    <>
-      {/* Mobile Toggle */}
-      <div className="lg:hidden py-16 text-center">
-        <button
-          type="button"
-          className="py-2 px-3 inline-flex justify-center items-center gap-x-2 text-start bg-gray-800 border border-gray-800 text-white text-sm font-medium rounded-lg shadow-2xs hover:bg-gray-950"
-        >
-          Open
-        </button>
-      </div>
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 flex flex-col z-50">
+      {/* Logo */}
+      <div className="px-6 py-7 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg">
+            <UserCog2 className="h-6 w-6 text-white" />
+          </div>
 
-      {/* Sidebar */}
-      <div className="lg:block w-64 fixed top-0 start-0 bottom-0 z-50 bg-white border-e border-gray-200">
-        <div className="relative flex flex-col h-full">
-          <header className="p-4 flex justify-between items-center">
-            <Image
-              src="/assets/logo.jpg"
-              alt="Logo"
-              width={150}
-              height={40}
-              className="h-10 mx-auto mb-2"
-            />
-          </header>
-
-          {/* Sidebar Menu */}
-          <nav className="h-full overflow-y-auto px-2">
-            <ul className="space-y-1 text-sm">
-              <li>
-                <Link href="/admin" className={getLinkClass("/admin")}>
-                  <div className="flex items-center">
-                    <BlocksIcon className="h-4 w-4 me-2" />
-                    Dashboard
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/admin/doctorList"
-                  className={getLinkClass("/admin/doctorList")}
-                >
-                  <div className="flex items-center">
-                    <AmbulanceIcon className="h-4 w-4 me-2" />
-                    Doctor
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/admin/patientList"
-                  className={getLinkClass("/admin/patientList")}
-                >
-                  <div className="flex items-center">
-                    <UserIcon className="h-4 w-4 me-2" />
-                    Patient
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/admin/reports"
-                  className={getLinkClass("/admin/reports")}
-                >
-                  <div className="flex items-center">
-                    <ClipboardClock className="h-4 w-4 me-2" />
-                    Reports
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/notifications"
-                  className={getLinkClass("/notifications")}
-                >
-                  <div className="flex items-center">
-                    <BellIcon className="h-4 w-4 me-2" />
-                    Notifications
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/analytics" className={getLinkClass("/analytics")}>
-                  <div className="flex items-center">
-                    <ChartSplineIcon className="h-4 w-4 me-2" />
-                    Analytics
-                  </div>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          {/* Footer */}
-          <footer className="mt-auto p-3 border-t">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Image
-                  src="https://images.unsplash.com/photo-1734122415415-88cb1d7d5dc0"
-                  width={28}
-                  height={28}
-                  className="h-7 w-7 rounded-full"
-                  alt="User"
-                />
-                <div className="flex flex-col leading-tight">
-                  <span className="text-sm font-medium text-gray-800">
-                    Mia Hudson
-                  </span>
-                  <span className="text-xs text-gray-500">Admin</span>
-                </div>
-              </div>
-
-              <button
-                onClick={async () => {
-                  await deleteCookie(ADMIN_TOKEN_KEY);
-                  push("/admin/login");
-                }}
-                className="text-xs text-red-600 font-medium hover:underline"
-              >
-                Sign Out
-              </button>
-            </div>
-          </footer>
+          <div>
+            <h1 className="font-bold text-xl text-slate-900">MediSync</h1>
+            <p className="text-xs text-slate-500">Admin Portal</p>
+          </div>
         </div>
       </div>
-    </>
+
+      {/* Navigation */}
+      <div className="flex-1 px-4 py-6">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-3 mb-4">
+          Navigation
+        </p>
+
+        <nav className="space-y-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+
+            const active =
+              pathname === item.href ||
+              (item.href !== "/admin" && pathname.startsWith(item.href));
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  group flex items-center gap-3 px-4 py-3 rounded-2xl
+                  transition-all duration-200
+                  ${
+                    active
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-100"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }
+                `}
+              >
+                <Icon
+                  className={`h-5 w-5 ${
+                    active
+                      ? "text-white"
+                      : "text-slate-500 group-hover:text-slate-700"
+                  }`}
+                />
+
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Admin Card */}
+      <div className="p-4 border-t border-slate-100">
+        <div className="bg-slate-50 rounded-2xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold">
+              {adminData?.username.charAt(0).toUpperCase() || "A"}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="capitalize font-semibold text-slate-900 truncate">
+                {adminData?.username || "Admin"}
+              </p>
+
+              <p className="text-xs text-slate-500">
+                {"Admin".toString().replaceAll("_", " ")}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={async () => {
+              await deleteCookie(ADMIN_TOKEN_KEY);
+              push("/admin/login");
+            }}
+            className="
+              mt-4 w-full
+              flex items-center justify-center gap-2
+              rounded-xl
+              border border-red-100
+              bg-red-50
+              py-2.5
+              text-sm font-medium
+              text-red-600
+              hover:bg-red-100
+              transition
+            "
+          >
+            <LogOut size={16} />
+            Logout
+          </button>
+        </div>
+      </div>
+    </aside>
   );
 };
 

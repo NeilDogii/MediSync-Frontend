@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getDoctorRecommendation } from "@/utils/requests/fronend/SearchDoctor";
+import { getDoctorRecommendation } from "@/utils/requests/frontend/SearchDoctor";
 import { Doctor } from "@/@types/doctor";
 import { checkPatientAuth } from "@/utils/requests/auth/checkAuth";
 import Popup from "@/components/global/Popup";

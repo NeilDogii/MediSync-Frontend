@@ -133,10 +133,64 @@ export async function fetchMeetingToken({
     });
     return response.json();
   } catch (error) {
-    console.error("Error updating appointment:", error);
+    console.error("Error fetching meeting token:", error);
     return false;
   }
 }
+
+export async function createReport({
+  appointmentId,
+  data,
+}: {
+  appointmentId: number;
+  data: Omit<Appointment["report"], "date">;
+}) {
+  try {
+    const response = await fetch(`${API}/report`, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        appointmentId,
+        ...data,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error creating report:", error);
+    return false;
+  }
+}
+
+export async function updateReport({
+  appointmentId,
+  data,
+}: {
+  appointmentId: number;
+  data: Omit<Appointment["report"], "date">;
+}) {
+  try {
+    const response = await fetch(`${API}/report`, {
+      method: "PATCH",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        appointmentId,
+        ...data,
+      }),
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Error creating report:", error);
+    return false;
+  }
+}
+
+
 
 /**
  *  condition      String

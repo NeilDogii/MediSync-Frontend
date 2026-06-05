@@ -16,6 +16,7 @@ export default async function page() {
     <>
       <Navbar isLoggedIn={!!token} />
       <Hero />
+      <div className="h-20 bg-gradient-to-b from-white to-[#CAF0F8]"></div>
       <Get_started />
       <Service_card />
       <Team />

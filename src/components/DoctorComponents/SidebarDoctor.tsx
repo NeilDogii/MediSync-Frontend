@@ -5,127 +5,158 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie } from "@/utils/cookie";
 import { DOCTOR_TOKEN_KEY } from "@/constants/keys";
-import Image from "next/image";
 
-const SidebarDoctor: React.FC = () => {
+import {
+  LayoutDashboard,
+  CalendarDays,
+  Users,
+  FileText,
+  Settings,
+  LogOut,
+  Stethoscope,
+} from "lucide-react";
+import { Doctor } from "@/@types/doctor";
+
+const SidebarDoctor: React.FC<{ doctorData: Doctor }> = ({ doctorData }) => {
   const pathname = usePathname();
   const { push } = useRouter();
-
-  const getLinkClass = (path: string) => {
-    return pathname === path
-      ? "block py-2 px-3 rounded-lg bg-gray-100 font-medium"
-      : "block py-2 px-3 rounded-lg hover:bg-gray-100";
-  };
 
   if (!pathname.startsWith("/doctor")) {
     return null;
   }
 
+  const navItems = [
+    {
+      label: "Dashboard",
+      href: "/doctor",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "Appointments",
+      href: "/doctor/appointments",
+      icon: CalendarDays,
+    },
+    {
+      label: "Patients",
+      href: "/doctor/myPatients",
+      icon: Users,
+    },
+    {
+      label: "Reports",
+      href: "/doctor/reportsDoctor",
+      icon: FileText,
+    },
+    {
+      label: "Settings",
+      href: "/doctor/settings",
+      icon: Settings,
+    },
+  ];
+
   return (
-    <>
-      {/* Sidebar */}
-      <div className="lg:block w-64 fixed top-0 start-0 bottom-0 z-50 bg-white border-e border-gray-200">
-        <div className="relative flex flex-col h-full">
-          {/* Header */}
-          <header className="p-4 flex items-center gap-2">
-            <Image
-              src="/assets/logo.jpg"
-              alt="Logo"
-              width={150}
-              height={40}
-              className="h-10 mx-auto mb-2"
-            />
-          </header>
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200 flex flex-col z-50">
+      {/* Logo */}
+      <div className="px-6 py-7 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg">
+            <Stethoscope className="h-5 w-5 text-white" />
+          </div>
 
-          {/* Menu */}
-          <nav className="h-full overflow-y-auto px-2">
-            <ul className="space-y-1 text-sm">
-              <li>
-                <Link href="/doctor" className={getLinkClass("/doctor")}>
-                  Dashboard
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/doctor/appointments"
-                  className={getLinkClass("/doctor/appointments")}
-                >
-                  My Appointments
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/doctor/myPatients"
-                  className={getLinkClass("/doctor/myPatients")}
-                >
-                  My Patients
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/doctor/reportsDoctor"
-                  className={getLinkClass("/doctor/reportsDoctor")}
-                >
-                  Reports
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/doctor/notifications"
-                  className={getLinkClass("/doctor/notifications")}
-                >
-                  Notifications
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/doctor/settings"
-                  className={getLinkClass("/doctor/settings")}
-                >
-                  Settings
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          {/* Footer */}
-          <footer className="mt-auto p-3 border-t">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Image
-                  src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
-                  width={28}
-                  height={28}
-                  className="h-7 w-7 rounded-full"
-                  alt="Doctor Image"
-                />
-                <div className="leading-tight">
-                  <span className="text-sm font-medium text-gray-800">
-                    Dr. John Doe
-                  </span>{" "}
-                  <br />
-                  <span className="text-xs text-gray-500">Doctor</span>
-                </div>
-              </div>
-
-              <button
-                onClick={async () => {
-                  await deleteCookie(DOCTOR_TOKEN_KEY);
-                  push("/doctor/login");
-                }}
-                className="text-xs text-red-600 font-bold hover:underline"
-              >
-                Logout
-              </button>
-            </div>
-          </footer>
+          <div>
+            <h1 className="font-bold text-xl text-slate-900">MediSync</h1>
+            <p className="text-xs text-slate-500">Doctor Portal</p>
+          </div>
         </div>
       </div>
-    </>
+
+      {/* Navigation */}
+      <div className="flex-1 px-4 py-6">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-3 mb-4">
+          Navigation
+        </p>
+
+        <nav className="space-y-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+
+            const active =
+              pathname === item.href ||
+              (item.href !== "/doctor" && pathname.startsWith(item.href));
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  group flex items-center gap-3 px-4 py-3 rounded-2xl
+                  transition-all duration-200
+                  ${
+                    active
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-100"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }
+                `}
+              >
+                <Icon
+                  className={`h-5 w-5 ${
+                    active
+                      ? "text-white"
+                      : "text-slate-500 group-hover:text-slate-700"
+                  }`}
+                />
+
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Doctor Card */}
+      <div className="p-4 border-t border-slate-100">
+        <div className="bg-slate-50 rounded-2xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold">
+              {doctorData.name.charAt(0)}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-900 truncate">
+                {doctorData.name}
+              </p>
+
+              <p className="text-xs text-slate-500">
+                {(doctorData?.specialization || "")
+                  .toString()
+                  .replaceAll("_", " ")}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={async () => {
+              await deleteCookie(DOCTOR_TOKEN_KEY);
+              push("/doctor/login");
+            }}
+            className="
+              mt-4 w-full
+              flex items-center justify-center gap-2
+              rounded-xl
+              border border-red-100
+              bg-red-50
+              py-2.5
+              text-sm font-medium
+              text-red-600
+              hover:bg-red-100
+              transition
+            "
+          >
+            <LogOut size={16} />
+            Logout
+          </button>
+        </div>
+      </div>
+    </aside>
   );
 };
 

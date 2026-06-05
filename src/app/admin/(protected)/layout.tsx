@@ -1,5 +1,8 @@
+import SidebarAdmin from "@/components/AdminComponents/SidebarAdmin";
 import { ADMIN_TOKEN_KEY } from "@/constants/keys";
 import { getCookie } from "@/utils/cookie";
+import { validateToken } from "@/utils/requests/auth/jwt";
+import { fetchAdmin } from "@/utils/requests/data/admin";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -17,5 +20,18 @@ export default async function RootLayout({
   if (!adminToken) {
     redirect("/admin/login");
   }
-  return children;
+  const tokenPayload = await validateToken(adminToken as string);
+  if (!tokenPayload) {
+    redirect("/admin/login");
+  }
+  const adminData = await fetchAdmin(parseInt(tokenPayload.payload.userId));
+  if (!adminData || !adminData.id) {
+    redirect("/admin/login");
+  }
+  return (
+    <main>
+      <SidebarAdmin adminData={adminData} />
+      {children}
+    </main>
+  );
 }

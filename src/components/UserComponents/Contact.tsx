@@ -1,5 +1,7 @@
 "use client";
 
+import { ContactRequest } from "@/@types/misc";
+import { createContactRequests } from "@/utils/requests/misc/contact";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -7,6 +9,7 @@ const topics = [
   { value: "general", label: "General Inquiry" },
   { value: "support", label: "Support" },
   { value: "feedback", label: "Feedback" },
+  { value: "apply", label: "Doctor Application" },
   { value: "other", label: "Other" },
 ];
 
@@ -24,7 +27,7 @@ export default function Contact() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData((prev) => ({
@@ -38,9 +41,24 @@ export default function Contact() {
     setDropdownOpen(false);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    try {
+      const response = await createContactRequests({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        topic: formData.topic as unknown as ContactRequest["topic"],
+        message: formData.message,
+      });
+      if (response) {
+        alert("Form submitted successfully!");
+      }
+    } catch (error) {
+      alert("Failed to submit contact request. Please try again.");
+      console.error(error);
+      return;
+    }
   };
 
   return (
