@@ -151,7 +151,7 @@ export default function Navbar({
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -180,20 +180,6 @@ export default function Navbar({
             className={getLinkClass("/book")}
           >
             Book Now
-          </Link>
-          <Link
-            href="/help"
-            onClick={() => setIsOpen(false)}
-            className={getLinkClass("/help")}
-          >
-            Help
-          </Link>
-          <Link
-            href="/blogs"
-            onClick={() => setIsOpen(false)}
-            className={getLinkClass("/blogs")}
-          >
-            Blogs
           </Link>
           <Link
             href="/contact"

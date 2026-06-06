@@ -1,3 +1,4 @@
+import UserSidebar from "@/components/UserComponents/UserSidebar";
 import { PATIENT_TOKEN_KEY } from "@/constants/keys";
 import { getCookie } from "@/utils/cookie";
 import type { Metadata } from "next";
@@ -17,5 +18,12 @@ export default async function RootLayout({
   if (!patientToken) {
     redirect("/");
   }
-  return children;
+  return (
+    <section className="flex gap-6 mt-36 h-[calc(100vh-144px)] overflow-hidden px-6 pb-6">
+      <UserSidebar />
+      <section className="flex-1 h-full overflow-y-auto no-scrollbar">
+        {children}
+      </section>
+    </section>
+  );
 }

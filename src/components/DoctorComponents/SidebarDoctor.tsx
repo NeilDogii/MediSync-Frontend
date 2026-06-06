@@ -138,18 +138,7 @@ const SidebarDoctor: React.FC<{ doctorData: Doctor }> = ({ doctorData }) => {
               await deleteCookie(DOCTOR_TOKEN_KEY);
               push("/doctor/login");
             }}
-            className="
-              mt-4 w-full
-              flex items-center justify-center gap-2
-              rounded-xl
-              border border-red-100
-              bg-red-50
-              py-2.5
-              text-sm font-medium
-              text-red-600
-              hover:bg-red-100
-              transition
-            "
+            className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100 transition"
           >
             <LogOut size={16} />
             Logout

@@ -1,7 +1,5 @@
 "use client";
 
-import Navbar from "@/components/UserComponents/Navbar";
-import UserSidebar from "@/components/UserComponents/UserSidebar";
 import { useEffect, useState } from "react";
 import { Appointment } from "@/@types/appointment";
 import { getCookie } from "@/utils/cookie";
@@ -38,7 +36,7 @@ export default function PaymentsPage({ userId }: { userId: string }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -67,8 +65,6 @@ export default function PaymentsPage({ userId }: { userId: string }) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Navbar isLoggedIn={true} />
-        <UserSidebar />
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-[#0074cc] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -80,10 +76,8 @@ export default function PaymentsPage({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navbar isLoggedIn={true} />
-      <UserSidebar />
-      <div className="pt-40 px-4 pb-10 md:ml-72 min-h-[calc(100vh-200px)]">
+    <div className="bg-gradient-to-br rounded-xl from-blue-50 to-indigo-100">
+      <div className="pt-7 px-4 pb-10">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -222,7 +216,7 @@ export default function PaymentsPage({ userId }: { userId: string }) {
                                 year: "numeric",
                                 month: "short",
                                 day: "numeric",
-                              }
+                              },
                             )}
                           </td>
                           <td className="py-4 px-4">

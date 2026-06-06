@@ -18,12 +18,12 @@ export default function PaymentClient({ token }: PaymentClientProps) {
   const [appointmentData, setAppointmentData] =
     useState<AppointmentData | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Partial<Doctor> | null>(
-    null
+    null,
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [appointmentDateTime, setAppointmentDateTime] = useState<Date | null>(
-    null
+    null,
   );
 
   const extractUserIdFromToken = (jwtToken: string): string | null => {
@@ -87,7 +87,7 @@ export default function PaymentClient({ token }: PaymentClientProps) {
       }
       const combined = mergeDateTime(
         new Date(appointmentData.date),
-        appointmentData.time
+        appointmentData.time,
       );
 
       setAppointmentDateTime(combined);
@@ -135,7 +135,7 @@ export default function PaymentClient({ token }: PaymentClientProps) {
       handler: function (response: RazorpayResponse) {
         setIsProcessing(false);
         alert(
-          "Payment successful! Payment ID: " + response.razorpay_payment_id
+          "Payment successful! Payment ID: " + response.razorpay_payment_id,
         );
 
         console.log("User ID:", userId);

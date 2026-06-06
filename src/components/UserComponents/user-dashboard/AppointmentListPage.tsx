@@ -1,7 +1,6 @@
 "use client";
 
 import Navbar from "@/components/UserComponents/Navbar";
-import UserSidebar from "@/components/UserComponents/UserSidebar";
 import { useEffect, useState } from "react";
 import { Appointment } from "@/@types/appointment";
 import { getCookie } from "@/utils/cookie";
@@ -301,10 +300,8 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 ">
-      <Navbar isLoggedIn={true} />
-      <UserSidebar />
-      <div className="pt-40 px-4 pb-10 md:ml-72 min-h-[calc(100vh-200px)]">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl">
+      <div className="pt-7 px-8 pb-10 ">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">

@@ -55,7 +55,7 @@ export default function BookPageBG() {
       <div className="absolute inset-0 bg-black/40"></div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16 xl:gap-24 px-4 sm:px-6 lg:px-12 xl:px-16 w-full max-w-7xl mx-auto pt-32 sm:pt-36 md:pt-40 lg:py-0 pb-12">
+      <div className="relative mt-20 z-10 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16 xl:gap-24 px-4 sm:px-6 lg:px-12 xl:px-16 w-full max-w-7xl mx-auto pt-32 sm:pt-36 md:pt-40 lg:py-0 pb-12">
         {/* Left Text Section */}
         <div className="lg:w-1/2 lg:max-w-lg text-center lg:text-left space-y-4 lg:space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white">
