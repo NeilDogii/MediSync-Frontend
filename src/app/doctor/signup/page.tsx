@@ -137,7 +137,7 @@ export default function DoctorSignup() {
             <option value="GENERAL_MEDICINE">General Medicine</option>
           </select>
 
-          <input
+          {/* <input
             type="number"
             name="fees"
             placeholder="Consultation Fees"
@@ -145,7 +145,7 @@ export default function DoctorSignup() {
             onChange={handleChange}
             required
             className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          /> */}
 
           <input
             type="password"

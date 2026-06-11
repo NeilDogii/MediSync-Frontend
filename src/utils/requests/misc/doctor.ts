@@ -30,9 +30,7 @@ export type DoctorDashboardData = {
   }[];
 };
 
-export async function fetchDoctor(
-  doctorId: number,
-): Promise<Doctor> {
+export async function fetchDoctor(doctorId: number): Promise<Doctor> {
   const response = await fetch(`${API}/misc/doctor/${doctorId}`, {
     method: "GET",
     headers: {
@@ -78,7 +76,11 @@ export async function updateDoctorSettings(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(settings),
+    // body: JSON.stringify(settings),
+    body: JSON.stringify({
+      ...settings,
+      fees: Number(settings.fees),
+    }),
     next: { tags: ["cache", "doctors"], revalidate: 60 * 5 },
   });
 
@@ -92,7 +94,8 @@ export async function updateDoctorSettings(
   return data;
 }
 
-export async function fetchDoctorReports(doctorId: number): Promise<{
+export async function fetchDoctorReports(doctorId: number): Promise<
+  {
     id: string;
     condition: string;
     fullReport: string;
@@ -100,7 +103,8 @@ export async function fetchDoctorReports(doctorId: number): Promise<{
     date: string;
     appointmentId: number;
     appointment: Partial<Appointment>;
-}[]> {
+  }[]
+> {
   const response = await fetch(`${API}/report/doctor-reports/${doctorId}`, {
     method: "GET",
     headers: {
