@@ -15,6 +15,7 @@ import {
   UsersIcon,
   SettingsIcon,
   MessageSquareText,
+  UserPlus,
 } from "lucide-react";
 
 const SidebarAdmin: React.FC<{
@@ -50,6 +51,11 @@ const SidebarAdmin: React.FC<{
       label: "Reports",
       href: "/admin/reports",
       icon: ClipboardClockIcon,
+    },
+    {
+      label: "Doctor Requests",
+      href: "/admin/doctorRequests",
+      icon: UserPlus,
     },
     {
       label: "Contact Requests",
