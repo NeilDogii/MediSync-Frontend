@@ -64,6 +64,9 @@ export default function Navbar({
           <Link href="/appointment" className={getLinkClass("/appointment")}>
             Book Now
           </Link>
+          <Link href="/chatbot" className={getLinkClass("/chatbot")}>
+            Chatbot
+          </Link>
 
           <Link href="/contact" className={getLinkClass("/contact")}>
             Contact Us
@@ -180,6 +183,13 @@ export default function Navbar({
             className={getLinkClass("/book")}
           >
             Book Now
+          </Link>
+          <Link
+            href="/chatbot"
+            onClick={() => setIsOpen(false)}
+            className={getLinkClass("/chatbot")}
+          >
+            Chatbot
           </Link>
           <Link
             href="/contact"
