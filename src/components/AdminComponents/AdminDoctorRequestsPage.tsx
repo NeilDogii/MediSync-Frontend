@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import React, { useState } from "react";
 import { UserPlus } from "lucide-react";
 
@@ -24,8 +23,11 @@ export default function AdminDoctorRequestsPage({ data }: Props) {
 
   const handleApprove = async (id: number) => {
     try {
-      await axios.patch(
+      await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/doctor-requests/${id}/approve`,
+        {
+          method: "PATCH",
+        },
       );
 
       setRequests((prev) => prev.filter((doctor) => doctor.id !== id));
@@ -36,8 +38,11 @@ export default function AdminDoctorRequestsPage({ data }: Props) {
 
   const handleReject = async (id: number) => {
     try {
-      await axios.patch(
+      await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/doctor-requests/${id}/reject`,
+        {
+          method: "PATCH",
+        },
       );
 
       setRequests((prev) => prev.filter((doctor) => doctor.id !== id));

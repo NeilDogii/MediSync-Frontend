@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -36,19 +35,31 @@ export default function DoctorSignup() {
     try {
       setLoading(true);
 
-      await axios.post(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/doctor/create`,
         {
-          ...formData,
-          fees: Number(formData.fees),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            fees: Number(formData.fees),
+          }),
         },
       );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create doctor account");
+      }
 
       alert(
         "Doctor request submitted successfully. Please wait for admin approval.",
       );
 
       router.push("/doctor/login");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       alert(error?.response?.data?.message || "Something went wrong");
     } finally {
