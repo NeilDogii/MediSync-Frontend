@@ -3,7 +3,7 @@
 import DoctorForm from "@/components/DoctorComponents/forms/DoctorForm";
 import Image from "next/image";
 import React from "react";
-
+import Link from "next/link";
 export default function DoctorLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
@@ -23,7 +23,18 @@ export default function DoctorLogin() {
 
         {/* Form */}
         <DoctorForm />
-
+        {/* Signup Link */}
+        <div className="flex justify-center mt-3 text-sm text-gray-600">
+          <span>
+            Don't have an account?{" "}
+            <Link
+              href="/doctor/signup"
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Sign Up
+            </Link>
+          </span>
+        </div>
         {/* Footer */}
         <p className="text-xs text-center text-gray-400 mt-5">
           © 2025 Doctor Portal
