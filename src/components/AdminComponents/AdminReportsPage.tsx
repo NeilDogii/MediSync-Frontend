@@ -55,7 +55,7 @@ export default function AdminReportsPage({
     <div className="ml-64 min-h-screen bg-slate-50 p-8">
       {/* HERO */}
       <div className="mb-8">
-        <div className="rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8">
+        <div className="rounded-[32px] bg-gradient-to-r from-[#065F46] via-[#10B981] to-[#6EE7B7] p-8">
           <p className="text-blue-100 text-sm">Admin Portal</p>
 
           <h1 className="text-4xl font-bold text-white">Doctor Reports</h1>
@@ -69,7 +69,8 @@ export default function AdminReportsPage({
       {/* REPORT TABLE */}
       <div className="rounded-3xl bg-white p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] flex items-center justify-center text-white">
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#047857] to-[#34D399] flex items-center justify-center text-white">
+            {" "}
             <FileText />
           </div>
 
@@ -122,8 +123,11 @@ export default function AdminReportsPage({
                         px-4
                         py-2
                         rounded-xl
-                        bg-[#0B6CB8]
-                        text-white
+                          bg-emerald-600
+  hover:bg-emerald-700
+  text-white
+  transition
+
                       "
                     >
                       <EyeIcon

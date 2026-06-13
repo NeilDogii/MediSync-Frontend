@@ -74,7 +74,7 @@ const SidebarAdmin: React.FC<{
       {/* Logo */}
       <div className="px-6 py-7 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg">
+          <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-700 to-teal-400 flex items-center justify-center shadow-lg">
             <UserCog2 className="h-6 w-6 text-white" />
           </div>
 
@@ -108,7 +108,7 @@ const SidebarAdmin: React.FC<{
                   transition-all duration-200
                   ${
                     active
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-100"
+                      ? "bg-gradient-to-r from-emerald-700 to-teal-400 text-white shadow-lg shadow-emerald-100"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }
                 `}
@@ -132,7 +132,7 @@ const SidebarAdmin: React.FC<{
       <div className="p-4 border-t border-slate-100">
         <div className="bg-slate-50 rounded-2xl p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-teal-400 flex items-center justify-center text-white font-bold">
               {adminData?.username.charAt(0).toUpperCase() || "A"}
             </div>
 

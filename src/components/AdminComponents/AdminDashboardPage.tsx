@@ -27,7 +27,8 @@ export default function AdminDashboardPage({
       {/* HERO */}
 
       <div className="mb-8">
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8 shadow-xl">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#065F46] via-[#10B981] to-[#6EE7B7] p-8 shadow-xl">
+          {" "}
           <div className="relative z-10">
             <p className="text-blue-100 text-sm mb-2">Admin Portal</p>
 
@@ -37,9 +38,7 @@ export default function AdminDashboardPage({
               Manage doctors, patients and monitor platform activity.
             </p>
           </div>
-
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
-
           <div className="absolute right-20 bottom-0 h-24 w-24 rounded-full bg-white/10" />
         </div>
       </div>
@@ -132,8 +131,7 @@ function StatCard({
     <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition">
       {/* Accent */}
 
-      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#0B6CB8] to-[#38BDF8]" />
-
+      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#047857] to-[#34D399]" />
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{title}</p>
@@ -141,7 +139,8 @@ function StatCard({
           <h3 className="mt-2 text-4xl font-bold text-slate-900">{value}</h3>
         </div>
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] text-white shadow-md">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#047857] to-[#34D399] text-white shadow-md">
+          {" "}
           {icon}
         </div>
       </div>
@@ -161,7 +160,8 @@ function ActionCard({ href, title, icon }: any) {
       <div className="group rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-sm hover:shadow-md transition">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] text-white shadow-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#047857] to-[#34D399] text-white shadow-sm">
+              {" "}
               {icon}
             </div>
 
@@ -177,8 +177,7 @@ function ActionCard({ href, title, icon }: any) {
             className="
               text-slate-400
               transition
-              group-hover:text-[#0B6CB8]
-              group-hover:translate-x-1
+group-hover:text-[#10B981]              group-hover:translate-x-1
             "
           />
         </div>

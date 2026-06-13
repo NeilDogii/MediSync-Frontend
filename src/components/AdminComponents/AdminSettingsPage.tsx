@@ -58,7 +58,7 @@ export default function AdminSettingsPage({
     <div className="ml-64 min-h-screen bg-slate-50 p-8">
       {/* HERO */}
       <div className="mb-8">
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8 shadow-xl">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#065F46] via-[#10B981] to-[#6EE7B7] p-8 shadow-xl">
           <div className="relative z-10">
             <p className="text-blue-100 text-sm mb-2">Admin Portal</p>
 
@@ -78,7 +78,8 @@ export default function AdminSettingsPage({
       {/* SETTINGS CARD */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] flex items-center justify-center text-white">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#047857] to-[#34D399] flex items-center justify-center text-white">
+            {" "}
             <ShieldCheck size={20} />
           </div>
 
@@ -129,9 +130,9 @@ export default function AdminSettingsPage({
               text-white
               font-semibold
               shadow-lg
-              bg-gradient-to-r
-              from-[#0B6CB8]
-              to-[#38BDF8]
+bg-gradient-to-r
+from-[#047857]
+to-[#34D399]
               hover:shadow-xl
               transition
             "

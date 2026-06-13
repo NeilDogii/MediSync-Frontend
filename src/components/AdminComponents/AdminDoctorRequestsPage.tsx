@@ -53,7 +53,7 @@ export default function AdminDoctorRequestsPage({ data }: Props) {
 
   return (
     <div className="ml-64 min-h-screen bg-slate-50 p-6">
-      <div className="bg-gradient-to-r from-blue-700 to-cyan-500 rounded-3xl p-8 mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#065F46] via-[#10B981] to-[#6EE7B7] rounded-3xl p-8 mb-6 relative overflow-hidden">
         <div className="relative z-10">
           <p className="text-blue-100 text-sm mb-1">Admin Portal</p>
           <h1 className="text-4xl font-bold text-white mb-2">
@@ -71,7 +71,8 @@ export default function AdminDoctorRequestsPage({ data }: Props) {
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="px-6 py-5 border-b">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#047857] to-[#34D399] flex items-center justify-center">
+              {" "}
               <UserPlus className="h-5 w-5 text-white" />
             </div>
 
@@ -123,14 +124,17 @@ export default function AdminDoctorRequestsPage({ data }: Props) {
                       <div className="flex justify-center gap-3">
                         <button
                           onClick={() => handleApprove(doctor.id)}
-                          className="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700"
+                          className="px-4 py-2 rounded-xl    bg-emerald-700
+    text-white
+    hover:bg-emerald-800
+    transition"
                         >
                           Approve
                         </button>
 
                         <button
                           onClick={() => handleReject(doctor.id)}
-                          className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700"
+                          className="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-400"
                         >
                           Reject
                         </button>

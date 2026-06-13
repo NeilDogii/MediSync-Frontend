@@ -9,6 +9,7 @@ export default function DeleteDoctorButton({ id }: { id: string }) {
       <Button
         size="icon"
         variant="destructive"
+        className="bg-red-100 text-red-500 hover:bg-red-200"
         onClick={async () => {
           if (confirm("Are you sure you want to delete this doctor?")) {
             const response = await deleteDoctor({ id });

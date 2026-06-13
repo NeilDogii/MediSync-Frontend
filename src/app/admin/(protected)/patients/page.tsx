@@ -19,7 +19,7 @@ export default async function PatientListPage() {
       {/* HERO */}
 
       <div className="mb-8">
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8 shadow-xl">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#065F46] via-[#10B981] to-[#6EE7B7] p-8 shadow-xl">
           <div className="relative z-10">
             <p className="text-blue-100 text-sm mb-2">Admin Portal</p>
 
@@ -64,7 +64,8 @@ export default async function PatientListPage() {
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] flex items-center justify-center text-white">
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#047857] to-[#34D399] flex items-center justify-center text-white">
+            {" "}
             <Users />
           </div>
 
@@ -98,8 +99,7 @@ function StatCard({
     <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition">
       {/* Accent */}
 
-      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#0B6CB8] to-[#38BDF8]" />
-
+      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#047857] to-[#34D399]" />
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{title}</p>
@@ -107,7 +107,8 @@ function StatCard({
           <h3 className="mt-2 text-4xl font-bold text-slate-900">{value}</h3>
         </div>
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] text-white shadow-md">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#047857] to-[#34D399] text-white shadow-md">
+          {" "}
           {icon}
         </div>
       </div>
