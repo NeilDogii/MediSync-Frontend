@@ -26,7 +26,7 @@ export async function fetchAdmin(adminId: number): Promise<{
   return data;
 }
 
-export async function fetchDoctors(): Promise<Doctor[]> {
+export async function fetchDoctorsAdmin(): Promise<Doctor[]> {
   const response = await fetch(`${API}/admin/doctors`, {
     method: "GET",
     headers: {
@@ -140,7 +140,6 @@ export async function updateAdmin({
     data: result,
   };
 }
-
 
 export async function deleteDoctor({ id }: { id: string }) {
   const response = await fetch(`${API}/admin/doctors/${id}`, {

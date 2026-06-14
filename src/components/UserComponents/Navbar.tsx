@@ -133,6 +133,7 @@ export default function Navbar({
                 Sign Up
               </div>
               <div
+                id="login_button"
                 // href="/login"
                 className="bg-[#0074cc] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#005fa3] cursor-pointer"
                 onClick={() => setShowPopup("LOGIN")}
@@ -260,6 +261,7 @@ export default function Navbar({
                   Sign Up
                 </div>
                 <div
+                  id="login_button"
                   // href="/login"
                   onClick={() => {
                     setIsOpen(false);

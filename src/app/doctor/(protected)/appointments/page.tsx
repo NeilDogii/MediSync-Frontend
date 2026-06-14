@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { CalendarDays, CheckCheck, XIcon } from "lucide-react";
+import { CalendarDays, CheckCheck, Plus, XIcon } from "lucide-react";
 import { Appointment } from "@/@types/appointment";
 import {
   fetchAppointments,
@@ -19,9 +19,11 @@ import {
   updateAppointment,
   createReport,
   updateReport,
+  createAppointment,
 } from "@/utils/requests/appointment/appointments";
 import { getCookie } from "@/utils/cookie";
 import DoctorLoadingScreen from "@/components/DoctorComponents/DoctorLoadingScreen";
+import { DOCTOR_TOKEN_KEY } from "@/constants/keys";
 
 const statusColors: Record<string, string> = {
   SCHEDULED: "bg-blue-100 text-blue-700",
@@ -54,7 +56,16 @@ export default function MyAppointmentsPage() {
   });
   const [submittingReport, setSubmittingReport] = useState(false);
 
-  // Extract doctor ID from JWT token
+  const [addAppointmentOpen, setAddAppointmentOpen] = useState(false);
+  const [submittingAppointment, setSubmittingAppointment] = useState(false);
+  const [addForm, setAddForm] = useState({
+    patientId: "",
+    date: "",
+    time: "",
+    isPaid: false,
+    condition: "",
+  });
+
   const extractDoctorIdFromToken = (token: string): number | null => {
     try {
       const parts = token.split(".");
@@ -72,7 +83,7 @@ export default function MyAppointmentsPage() {
 
   useEffect(() => {
     const loadDoctorId = async () => {
-      const token = await getCookie("__doctor_token__");
+      const token = await getCookie(DOCTOR_TOKEN_KEY);
       if (token) {
         const id = extractDoctorIdFromToken(token);
         if (id) {
@@ -88,13 +99,66 @@ export default function MyAppointmentsPage() {
       const loadAppointments = async () => {
         setLoading(true);
         const data = await fetchAppointments({ doctorId });
-        console.log(data);
         setAppointments(data);
         setLoading(false);
       };
       loadAppointments();
     }
   }, [doctorId]);
+
+  const uniquePatients = useMemo(() => {
+    if (!appointments) return [];
+    const patientMap = new Map();
+    appointments.forEach((appt) => {
+      if (appt.patient && !patientMap.has(appt.patient.id)) {
+        patientMap.set(appt.patient.id, appt.patient);
+      }
+    });
+    return Array.from(patientMap.values());
+  }, [appointments]);
+
+  const handleAddAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingAppointment(true);
+
+    try {
+      const combinedDateTime = new Date(
+        `${addForm.date}T${addForm.time}`,
+      ).toISOString();
+
+      const response = await createAppointment({
+        data: {
+          doctorId: doctorId!,
+          patientId: Number(addForm.patientId),
+          date: new Date(combinedDateTime),
+          isPaid: addForm.isPaid,
+          isPaidToDoctor: addForm.isPaid,
+          condition: addForm.condition,
+          status: "SCHEDULED",
+        },
+      });
+
+      if (!response) {
+        alert("Error adding appointment.");
+        return;
+      }
+
+      setAddAppointmentOpen(false);
+      setAddForm({
+        patientId: "",
+        date: "",
+        time: "",
+        isPaid: false,
+        condition: "",
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to add appointment", error);
+      alert("Error adding appointment.");
+    } finally {
+      setSubmittingAppointment(false);
+    }
+  };
 
   const handleStatusChange = async (
     appointment: Appointment,
@@ -191,7 +255,6 @@ export default function MyAppointmentsPage() {
         });
       }
 
-      // Update local appointments state
       if (appointments) {
         setAppointments(
           appointments.map((a) =>
@@ -239,47 +302,34 @@ export default function MyAppointmentsPage() {
     return (
       <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hover:shadow-lg transition-all">
         <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
-          {/* Left */}
-
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] flex items-center justify-center text-white font-bold text-xl shadow-lg">
               {appointment.patient?.name?.charAt(0)}
             </div>
-
             <div>
               <h3 className="font-bold text-lg text-slate-900">
                 {appointment.patient?.name}
               </h3>
-
               <p className="text-slate-500">{appointment.condition}</p>
             </div>
           </div>
 
-          {/* Center */}
-
           <div className="flex flex-wrap gap-6">
             <div>
               <p className="text-xs uppercase text-slate-400">Date</p>
-
               <p className="font-semibold">{formatDate(appointment.date)}</p>
             </div>
-
             <div>
               <p className="text-xs uppercase text-slate-400">Time</p>
-
               <p className="font-semibold">{formatTime(appointment.date)}</p>
             </div>
-
             <div>
               <p className="text-xs uppercase text-slate-400">Payment</p>
-
               <p className="font-semibold">
                 {appointment.isPaid ? "Paid" : "Pending"}
               </p>
             </div>
           </div>
-
-          {/* Right */}
 
           <div className="flex items-center gap-3 flex-wrap">
             <Badge className={`${statusColors[appointment.status]}`}>
@@ -314,6 +364,7 @@ export default function MyAppointmentsPage() {
       </div>
     );
   };
+
   function StatCard({
     title,
     value,
@@ -325,23 +376,18 @@ export default function MyAppointmentsPage() {
   }) {
     return (
       <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-sm transition-all duration-300">
-        {/* Accent */}
         <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-[#0B6CB8] to-[#38BDF8]" />
-
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">{title}</p>
-
             <h3 className="mt-2 text-4xl font-bold text-slate-900 leading-none">
               {value}
             </h3>
           </div>
-
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B6CB8] to-[#38BDF8] text-white shadow-md">
             {icon}
           </div>
         </div>
-
         <div className="mt-4 flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-emerald-500" />
           <span className="text-xs font-medium text-slate-500">
@@ -362,36 +408,44 @@ export default function MyAppointmentsPage() {
         {/* Hero */}
         <div className="mb-8">
           <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#0F4C81] via-[#0B6CB8] to-[#38BDF8] p-8 shadow-xl">
-            <div className="relative z-10">
-              <p className="text-blue-100 text-sm mb-2">Doctor Portal</p>
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <p className="text-blue-100 text-sm mb-2">Doctor Portal</p>
+                <h1 className="text-4xl font-bold text-white">
+                  My Appointments
+                </h1>
+                <p className="text-blue-100 mt-2">
+                  Manage consultations, reports and patient visits.
+                </p>
+              </div>
 
-              <h1 className="text-4xl font-bold text-white">My Appointments</h1>
-
-              <p className="text-blue-100 mt-2">
-                Manage consultations, reports and patient visits.
-              </p>
+              {/* Add Appointment Trigger */}
+              <button
+                onClick={() => setAddAppointmentOpen(true)}
+                className="flex items-center gap-2 bg-white text-[#0B6CB8] hover:bg-slate-50 hover:scale-105 transition-all duration-300 font-bold px-6 py-4 rounded-2xl shadow-lg relative z-10"
+              >
+                <Plus size={20} strokeWidth={2.5} />
+                Add Appointment
+              </button>
             </div>
 
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
-            <div className="absolute right-20 bottom-0 h-24 w-24 rounded-full bg-white/10" />
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 pointer-events-none" />
+            <div className="absolute right-20 bottom-0 h-24 w-24 rounded-full bg-white/10 pointer-events-none" />
           </div>
         </div>
 
         {/* Overview Cards */}
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatCard
             title="Upcoming"
             value={groupedAppointments.SCHEDULED.length}
             icon={<CalendarDays size={24} />}
           />
-
           <StatCard
             title="Completed"
             value={groupedAppointments.COMPLETED.length}
             icon={<CheckCheck size={24} />}
           />
-
           <StatCard
             title="Cancelled"
             value={groupedAppointments.CANCELLED.length}
@@ -403,18 +457,16 @@ export default function MyAppointmentsPage() {
           title="Upcoming Appointments"
           items={groupedAppointments.SCHEDULED}
         />
-
         <Section
           title="Completed Appointments"
           items={groupedAppointments.COMPLETED}
         />
-
         <Section
           title="Cancelled Appointments"
           items={groupedAppointments.CANCELLED}
         />
 
-        {/* Existing Modals */}
+        {/* --- VIEW APPOINTMENT MODAL --- */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="rounded-2xl">
             <DialogHeader>
@@ -491,7 +543,7 @@ export default function MyAppointmentsPage() {
           </DialogContent>
         </Dialog>
 
-        {/* REPORT MODAL */}
+        {/* --- REPORT MODAL --- */}
         <Dialog open={reportOpen} onOpenChange={setReportOpen}>
           <DialogContent className="rounded-2xl max-w-2xl">
             <DialogHeader>
@@ -507,7 +559,6 @@ export default function MyAppointmentsPage() {
             </DialogHeader>
 
             <form onSubmit={handleReportSubmit} className="space-y-4 mt-3">
-              {/* Condition Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Condition
@@ -527,7 +578,6 @@ export default function MyAppointmentsPage() {
                 />
               </div>
 
-              {/* Full Report Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full Report
@@ -547,7 +597,6 @@ export default function MyAppointmentsPage() {
                 />
               </div>
 
-              {/* Remedies Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Remedies
@@ -582,6 +631,131 @@ export default function MyAppointmentsPage() {
                 <Button
                   type="button"
                   onClick={() => setReportOpen(false)}
+                  className="bg-gray-400"
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* --- ADD APPOINTMENT MODAL --- */}
+        <Dialog open={addAppointmentOpen} onOpenChange={setAddAppointmentOpen}>
+          <DialogContent className="rounded-2xl max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add New Appointment</DialogTitle>
+              <DialogDescription>
+                Schedule a follow-up or new consultation with an existing
+                patient.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleAddAppointment} className="space-y-4 mt-3">
+              {/* Patient Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Patient
+                </label>
+                <select
+                  value={addForm.patientId}
+                  onChange={(e) =>
+                    setAddForm({ ...addForm, patientId: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B6CB8] bg-white"
+                  required
+                >
+                  <option value="" disabled>
+                    -- Select an existing patient --
+                  </option>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {uniquePatients.map((patient: any) => (
+                    <option key={patient.id} value={patient.id}>
+                      {patient.name} ({patient.email || "No Email"})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Date & Time Row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    value={addForm.date}
+                    onChange={(e) =>
+                      setAddForm({ ...addForm, date: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B6CB8]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Time
+                  </label>
+                  <input
+                    type="time"
+                    value={addForm.time}
+                    onChange={(e) =>
+                      setAddForm({ ...addForm, time: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B6CB8]"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Condition / Problem */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Problem / Symptoms
+                </label>
+                <textarea
+                  value={addForm.condition}
+                  onChange={(e) =>
+                    setAddForm({ ...addForm, condition: e.target.value })
+                  }
+                  placeholder="e.g., Follow up on blood pressure..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B6CB8] resize-none"
+                  required
+                />
+              </div>
+
+              {/* Payment Status Checkbox */}
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="isPaidCheck"
+                  checked={addForm.isPaid}
+                  onChange={(e) =>
+                    setAddForm({ ...addForm, isPaid: e.target.checked })
+                  }
+                  className="h-4 w-4 text-[#0B6CB8] focus:ring-[#0B6CB8] border-gray-300 rounded"
+                />
+                <label
+                  htmlFor="isPaidCheck"
+                  className="text-sm font-medium text-gray-700 cursor-pointer"
+                >
+                  Mark as Paid
+                </label>
+              </div>
+
+              <DialogFooter className="flex gap-2 pt-4">
+                <Button
+                  type="submit"
+                  disabled={submittingAppointment}
+                  className="bg-[#0B6CB8] hover:bg-[#095a9c]"
+                >
+                  {submittingAppointment ? "Saving..." : "Create Appointment"}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setAddAppointmentOpen(false)}
                   className="bg-gray-400"
                 >
                   Cancel

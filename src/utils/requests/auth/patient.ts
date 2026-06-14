@@ -9,7 +9,6 @@ export async function PatientLogin({
   email: string;
   password: string;
 }) {
-  console.log(email, password);
   if (!email || email.trim() === "" || !password || password.trim() === "") {
     return { success: false, message: "email and password are required." };
   }

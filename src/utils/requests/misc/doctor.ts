@@ -121,3 +121,21 @@ export async function fetchDoctorReports(doctorId: number): Promise<
   const data = await response.json();
   return data;
 }
+
+export async function uploadDoctorAvatar(formData: FormData): Promise<{
+  url: string;
+}> {
+  const response = await fetch(`${API}/misc/doctor/upload-avatar`, {
+    method: "POST",
+    body: formData,
+    next: { tags: ["cache", "doctors"], revalidate: 60 * 5 },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch doctor reports.");
+  }
+
+  const data = await response.json();
+  return data;
+}

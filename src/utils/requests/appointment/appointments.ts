@@ -65,7 +65,7 @@ export async function createAppointment({
     date: Date;
     status?: string;
     isPaid?: boolean;
-    isDoctorPaid?: boolean;
+    isPaidToDoctor?: boolean;
   };
 }) {
   try {
@@ -189,8 +189,6 @@ export async function updateReport({
     return false;
   }
 }
-
-
 
 /**
  *  condition      String

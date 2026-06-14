@@ -26,7 +26,7 @@ export default function DoctorLogin() {
         {/* Signup Link */}
         <div className="flex justify-center mt-3 text-sm text-gray-600">
           <span>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/doctor/signup"
               className="text-blue-600 font-medium hover:underline"

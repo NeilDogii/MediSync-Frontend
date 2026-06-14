@@ -81,7 +81,6 @@ const downloadReportAsPDF = async (appointment: Appointment) => {
     alert("No report available for this appointment");
     return;
   }
-  console.log(appointment);
 
   try {
     const { jsPDF } = await import("jspdf");

@@ -19,6 +19,7 @@ export interface Appointment {
   updatedAt: string;
   doctor?: Partial<Doctor>;
   patient?: Partial<{
+    id: number;
     name: string;
     email: string;
     age: number;
@@ -31,7 +32,7 @@ export interface Appointment {
     remedies: string;
     date: string;
     id?: string;
-  }
+  };
 }
 
 declare global {
@@ -41,7 +42,7 @@ declare global {
 }
 
 export interface RazorpayConstructor {
-  new(options: RazorpayOptions): RazorpayInstance;
+  new (options: RazorpayOptions): RazorpayInstance;
 }
 
 export interface RazorpayInstance {

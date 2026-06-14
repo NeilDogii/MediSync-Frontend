@@ -2,7 +2,7 @@ import AddDoctorButton from "@/components/AdminComponents/AddDoctorButton";
 import { DataTable } from "@/components/AdminComponents/data-table";
 import { doctorColumns } from "@/components/AdminComponents/doctorColumns";
 
-import { fetchDoctors } from "@/utils/requests/data/admin";
+import { fetchDoctorsAdmin } from "@/utils/requests/data/admin";
 
 import {
   Stethoscope,
@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 export default async function DoctorListPage() {
-  const doctorList = await fetchDoctors();
+  const doctorList = await fetchDoctorsAdmin();
 
   const totalDoctors = doctorList.length;
 

@@ -38,8 +38,6 @@ export default function DashboardPage({ userId }: { userId: string }) {
         },
       });
 
-      console.log(response);
-
       if (response.ok) {
         const data = await response.json();
         setPatient(data);

@@ -13,7 +13,6 @@ export default async function DashboardPage() {
   if (doctorId) {
     try {
       dashboardData = await fetchDoctorDashboard(parseInt(doctorId));
-      console.log(dashboardData);
     } catch (error) {
       console.error("Failed to fetch doctor dashboard data:", error);
     }
