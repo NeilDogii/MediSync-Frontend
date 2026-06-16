@@ -318,7 +318,7 @@ export default function FeaturedHighlights() {
           <div>
             <Pill>
               <Bot size={11} />
-              AI Chatbot
+              AI MediBot
             </Pill>
             <h2 className="text-3xl md:text-4xl font-bold text-[#0077B6] mb-3 leading-tight">
               Instant health guidance,
