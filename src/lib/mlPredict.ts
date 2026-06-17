@@ -152,6 +152,6 @@ export function predictFromModel(symptoms: string) {
     confidence: diseasePred.confidence,
     urgent: detectUrgency(symptoms),
     matchedSymptoms: extractMatchedTerms(symptoms),
-    topDiseases: diseasePred.probabilities.sort((a, b) => b.probability - a.probability).slice(0, 3),
+    topDiseases: diseasePred.probabilities.sort((a, b) => b.probability - a.probability).slice(0, 5),
   };
 }

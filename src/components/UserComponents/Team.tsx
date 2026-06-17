@@ -1,178 +1,80 @@
-import Image from 'next/image';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+"use client";
+import Image from "next/image";
+import { UserRound } from "lucide-react";
+import { Doctor } from "@/@types/doctor";
 
-interface TeamMember {
-  id: number;
-  name: string;
-  role: string;
-  description: string;
-  imagePath: string;
-  social: {
-    facebook: string;
-    twitter: string;
-    instagram: string;
-    linkedin: string;
-  };
-}
-
-const teamMembers: TeamMember[] = [
-  {
-    id: 1,
-    name: 'Dr. Sandip Sen',
-    role: 'GYNECOLOGIST',
-    description: 'Lorem ipsum dolor sit amet consecte adipiscing elit amet hendrerit pretium nulla sed enim iaculis mi.',
-    imagePath: '/assets/doctor1.jpeg',
-    social: {
-      facebook: '#',
-      twitter: '#',
-      instagram: '#',
-      linkedin: '#'
-    }
-  },
-  {
-    id: 2,
-    name: 'Dr. Mohit Jha',
-    role: 'DENTAL SPECIALIST',
-    description: 'Lorem ipsum dolor sit amet consecte adipiscing elit amet hendrerit pretium nulla sed enim iaculis mi.',
-    imagePath: '/assets/doctor2.jpg',
-    social: {
-      facebook: '#',
-      twitter: '#',
-      instagram: '#',
-      linkedin: '#'
-    }
-  },
-  {
-    id: 3,
-    name: 'Dr. Sunil Sharma',
-    role: 'ORTHOPEDIC',
-    description: 'Lorem ipsum dolor sit amet consecte adipiscing elit amet hendrerit pretium nulla sed enim iaculis mi.',
-    imagePath: '/assets/doctor3.jpeg',
-    social: {
-      facebook: '#',
-      twitter: '#',
-      instagram: '#',
-      linkedin: '#'
-    }
-  },
-  {
-    id: 4,
-    name: 'Dr. Sunita Deb',
-    role: 'BRAIN SURGEON',
-    description: 'Lorem ipsum dolor sit amet consecte adipiscing elit amet hendrerit pretium nulla sed enim iaculis mi.',
-    imagePath: '/assets/doctor4.jpeg',
-    social: {
-      facebook: '#',
-      twitter: '#',
-      instagram: '#',
-      linkedin: '#'
-    }
-  },
-  {
-    id: 5,
-    name: 'Dr. Kunal Kapoor',
-    role: 'HEART SPECIALIST',
-    description: 'Lorem ipsum dolor sit amet consecte adipiscing elit amet hendrerit pretium nulla sed enim iaculis mi.',
-    imagePath: '/assets/doctor5.webp',
-    social: {
-      facebook: '#',
-      twitter: '#',
-      instagram: '#',
-      linkedin: '#'
-    }
-  },
-  {
-    id: 6,
-    name: 'Dr. Anushka Shetty',
-    role: 'EYE SPECIALIST',
-    description: 'Lorem ipsum dolor sit amet consecte adipiscing elit amet hendrerit pretium nulla sed enim iaculis mi.',
-    imagePath: '/assets/doctor6.avif',
-    social: {
-      facebook: '#',
-      twitter: '#',
-      instagram: '#',
-      linkedin: '#'
-    }
-  }
-];
-
-export default function Team() {
+export default function Team({ doctors }: { doctors: Doctor[] }) {
   return (
-    <section className="py-16 px-4 bg-white">
+    <section className="py-20 px-6 bg-gradient-to-b from-white to-[#F7FCFF]">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-[#0077B6] mb-4">
+        <div className="text-center mb-14">
+          <span className="inline-block px-4 py-1 rounded-full bg-[#E0F7FF] text-[#0077B6] font-medium mb-4">
+            Our Experts
+          </span>
+
+          <h2 className="text-4xl md:text-5xl font-bold text-[#023E8A] mb-5">
             Meet our team members
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Meet our dedicated team of healthcare professionals committed to providing exceptional medical care. Our experienced specialists bring expertise, compassion, and innovative approaches to ensure the best outcomes for our patients.
+
+          <p className="text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Meet our dedicated healthcare professionals committed to delivering
+            exceptional medical care with expertise, compassion, and
+            patient-first treatment.
           </p>
         </div>
 
-        {/* Team Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teamMembers.map((member) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {doctors.map((doctor) => (
             <div
-              key={member.id}
-              className="bg-[#E0F7FF] rounded-3xl border-2 border-[#0077B6] p-8 text-center hover:shadow-lg transition-shadow duration-300"
+              key={doctor.id}
+              className="bg-white border border-sky-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
             >
-              {/* Profile Image */}
-              <div className="relative w-32 h-32 mx-auto mb-6">
-                <Image
-                  src={member.imagePath}
-                  alt={member.name}
-                  fill
-                  className="object-cover rounded-full"
-                />
+              <div className="flex items-center gap-4">
+                <div className="relative shrink-0 w-16 h-16">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#0077B6] to-[#90E0EF] p-[2px]">
+                    <div className="relative w-full h-full rounded-full overflow-hidden bg-[#F4FAFD]">
+                      {doctor.avatarUrl ? (
+                        <Image
+                          src={doctor.avatarUrl}
+                          alt={doctor.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-[#EAF8FF]">
+                          <UserRound size={24} className="text-[#0077B6]" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-[#023E8A] text-lg truncate">
+                    {doctor.name}
+                  </h3>
+
+                  <span className="inline-block mt-1 px-2.5 py-1 rounded-full bg-[#EAF8FF] text-[#0077B6] text-xs capitalize">
+                    {doctor.specialization
+                      ?.toString()
+                      .replace("_", " ")
+                      .toLowerCase()}
+                  </span>
+                </div>
               </div>
 
-              {/* Name */}
-              <h3 className="text-2xl font-bold text-[#0EA5E9] mb-2">
-                {member.name}
-              </h3>
-
-              {/* Role */}
-              <p className="text-sm font-semibold text-gray-700 tracking-wide mb-4">
-                {member.role}
+              <p className="mt-4 text-sm text-gray-600 line-clamp-2 leading-6">
+                {doctor.about || "No description available."}
               </p>
 
-              {/* Description */}
-              <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                {member.description}
-              </p>
-
-              {/* Social Icons */}
-              <div className="flex justify-center gap-3">
-                <a
-                  href={member.social.facebook}
-                  className="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-[#0EA5E9] hover:text-white transition-colors duration-300"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="w-5 h-5 text-[#0EA5E9] hover:text-white" />
-                </a>
-                <a
-                  href={member.social.twitter}
-                  className="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-[#0EA5E9] hover:text-white transition-colors duration-300"
-                  aria-label="Twitter"
-                >
-                  <Twitter className="w-5 h-5 text-[#0EA5E9] hover:text-white" />
-                </a>
-                <a
-                  href={member.social.instagram}
-                  className="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-[#0EA5E9] hover:text-white transition-colors duration-300"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-5 h-5 text-[#0EA5E9] hover:text-white" />
-                </a>
-                <a
-                  href={member.social.linkedin}
-                  className="w-10 h-10 bg-white rounded-lg flex items-center justify-center hover:bg-[#0EA5E9] hover:text-white transition-colors duration-300"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="w-5 h-5 text-[#0EA5E9] hover:text-white" />
-                </a>
-              </div>
+              <button
+                onClick={() => {
+                  window.location.href = `/doctors/${doctor.id}`;
+                }}
+                className="mt-4 w-full rounded-xl border border-[#0077B6] py-2 text-sm font-medium text-[#0077B6] hover:bg-[#0077B6] hover:text-white transition cursor-pointer"
+              >
+                View Profile
+              </button>
             </div>
           ))}
         </div>

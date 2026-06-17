@@ -10,6 +10,17 @@
 !.yarn/releases
 !.yarn/versions
 
+# datasets
+public/data/raw_data.csv
+public/data/chatbot-model.json
+
+# python
+.venv/
+
+# build
+node_modules/
+.next/
+
 # testing
 /coverage
 
