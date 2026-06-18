@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Send,
   Phone,
@@ -16,7 +17,7 @@ import {
 
 type Message = {
   sender: "bot" | "user";
-  text: string;
+  text: string | React.ReactNode; // Updated to accept React components
 };
 
 type PredictionResponse = {
@@ -29,29 +30,159 @@ type PredictionResponse = {
   topDiseases: { label: string; probability: number }[];
 };
 
+// --- NEW PREMIUM RESULT CARD COMPONENT ---
+const ResultCard = ({ data }: { data: PredictionResponse }) => (
+  <div className="w-full space-y-4 font-sans">
+    {data.urgent && (
+      <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 shadow-sm">
+        <AlertTriangle className="shrink-0 mt-0.5" size={18} />
+        <p className="text-sm font-medium">
+          This looks urgent. Please seek immediate medical care.
+        </p>
+      </div>
+    )}
+
+    <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm text-slate-700">
+      <div>
+        <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          Predicted Condition
+        </p>
+        <p className="text-xl font-bold text-[#0077B6]">{data.disease}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Confidence
+          </p>
+          <p className="font-semibold text-slate-800">{data.confidence}%</p>
+        </div>
+        <div>
+          <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Recommended Specialist
+          </p>
+          <p className="font-semibold text-slate-800">{data.doctor}</p>
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          Matched Symptoms
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {data.matchedSymptoms && data.matchedSymptoms.length > 0 ? (
+            data.matchedSymptoms.map((sym, i) => (
+              <span
+                key={i}
+                className="rounded-lg border border-cyan-100 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700"
+              >
+                {sym}
+              </span>
+            ))
+          ) : (
+            <span className="text-sm text-slate-500">None identified</span>
+          )}
+        </div>
+      </div>
+
+      <div className="border-t border-slate-100 pt-4">
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          Top Possibilities
+        </p>
+        <div className="space-y-2">
+          {data.topDiseases.map((item, i) => (
+            <div key={i} className="flex items-center justify-between text-sm">
+              <span className="text-slate-600">{item.label}</span>
+              <span className="font-medium text-slate-800">
+                {item.probability}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* <div className="border-t border-slate-100 pt-4">
+        <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          Medical Advice
+        </p>
+        <p className="text-sm leading-relaxed">{data.advice}</p>
+      </div> */}
+    </div>
+  </div>
+);
+
 export default function PatientTriageChatbot() {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: "bot",
-      text: "Hello 👋 I can help with a preliminary symptom-based triage. What is your age?",
+      text: "Hello 👋 Please describe your symptoms in detail. Example: I have severe chest pain and heavy sweating.",
     },
   ]);
   const [input, setInput] = useState("");
-  const [step, setStep] = useState<"age" | "gender" | "symptoms" | "done">(
-    "age",
+  const [step, setStep] = useState<"initial_symptoms" | "clarify" | "done">(
+    "initial_symptoms",
   );
-  const [age, setAge] = useState<number | null>(null);
-  const [gender, setGender] = useState<string>("");
+  const [accumulatedSymptoms, setAccumulatedSymptoms] = useState("");
+  const [recommendedDoctor, setRecommendedDoctor] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const CONFIDENCE_THRESHOLD = 40.0;
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const pushBot = (text: string) => {
+  const pushBot = (text: string | React.ReactNode) => {
     setMessages((prev) => [...prev, { sender: "bot", text }]);
+  };
+
+  const executeTriage = async (symptomQuery: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/chatbot/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptoms: symptomQuery }),
+      });
+
+      const data = (await response.json()) as
+        | PredictionResponse
+        | { message: string };
+
+      if (!response.ok || !("disease" in data)) {
+        throw new Error(
+          "message" in data ? data.message : "Prediction failed.",
+        );
+      }
+
+      if (
+        step === "initial_symptoms" &&
+        data.confidence < CONFIDENCE_THRESHOLD
+      ) {
+        setAccumulatedSymptoms(symptomQuery);
+        pushBot(
+          "The information provided is a bit ambiguous. Could you describe your symptoms with more details, such as how long you've had them or any associated feelings?",
+        );
+        setStep("clarify");
+        return;
+      }
+
+      setRecommendedDoctor(data.doctor);
+
+      // Render the new card component instead of standard text
+      pushBot(<ResultCard data={data} />);
+
+      pushBot(
+        "Would you like to review available specialist recommendations for your condition?",
+      );
+      setStep("done");
+    } catch (error) {
+      pushBot(error instanceof Error ? error.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSend = async () => {
@@ -61,68 +192,11 @@ export default function PatientTriageChatbot() {
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
     setInput("");
 
-    if (step === "age") {
-      const parsedAge = Number(userInput);
-      setAge(Number.isFinite(parsedAge) ? parsedAge : null);
-      pushBot("Thank you. Please enter your gender.");
-      setStep("gender");
-      return;
-    }
-
-    if (step === "gender") {
-      setGender(userInput);
-      pushBot(
-        "Please describe your symptoms in one sentence. Example: chest pain, sweating, shortness of breath.",
-      );
-      setStep("symptoms");
-      return;
-    }
-
-    if (step === "symptoms") {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/chatbot/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ age, gender, symptoms: userInput }),
-        });
-
-        const data = (await response.json()) as
-          | PredictionResponse
-          | { message: string };
-
-        if (!response.ok || !("disease" in data)) {
-          throw new Error(
-            "message" in data ? data.message : "Prediction failed.",
-          );
-        }
-
-        const lines = [
-          `Predicted disease: ${data.disease}`,
-          `Recommended doctor: ${data.doctor}`,
-          `Confidence score: ${data.confidence}%`,
-          `Matched terms: ${data.matchedSymptoms.join(", ") || "not available"}`,
-          `Top possibilities: ${data.topDiseases
-            .map((item) => `${item.label} (${item.probability}%)`)
-            .join(", ")}`,
-          data.advice,
-        ];
-
-        if (data.urgent) {
-          lines.unshift(
-            "⚠️ This looks urgent. Please seek immediate medical care.",
-          );
-        }
-
-        pushBot(lines.join("\n\n"));
-        setStep("done");
-      } catch (error) {
-        pushBot(
-          error instanceof Error ? error.message : "Something went wrong.",
-        );
-      } finally {
-        setLoading(false);
-      }
+    if (step === "initial_symptoms") {
+      await executeTriage(userInput);
+    } else if (step === "clarify") {
+      const combined = `${accumulatedSymptoms} ${userInput}`;
+      await executeTriage(combined);
     }
   };
 
@@ -130,13 +204,13 @@ export default function PatientTriageChatbot() {
     setMessages([
       {
         sender: "bot",
-        text: "Hello 👋 I can help with a preliminary symptom-based triage. What is your age?",
+        text: "Hello 👋 Please describe your symptoms in detail. Example: I have severe chest pain and heavy sweating.",
       },
     ]);
     setInput("");
-    setStep("age");
-    setAge(null);
-    setGender("");
+    setStep("initial_symptoms");
+    setAccumulatedSymptoms("");
+    setRecommendedDoctor("");
     setLoading(false);
   };
 
@@ -162,7 +236,10 @@ export default function PatientTriageChatbot() {
                   </p>
                 </div>
               </div>
-              <button className="w-full rounded-2xl bg-[#0077B6] px-5 py-4 text-white hover:bg-[#005f92]">
+              <button
+                onClick={() => router.push("/doctors")}
+                className="w-full rounded-2xl bg-[#0077B6] px-5 py-4 text-white hover:bg-[#005f92]"
+              >
                 Find Nearby Doctors
               </button>
             </div>
@@ -258,7 +335,7 @@ export default function PatientTriageChatbot() {
                         className={`px-5 py-4 text-[15px] leading-relaxed shadow-sm whitespace-pre-wrap ${
                           message.sender === "user"
                             ? "bg-gradient-to-br from-[#0077B6] to-[#005f92] text-white rounded-2xl rounded-tr-sm"
-                            : "bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-sm"
+                            : "bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-sm w-full"
                         }`}
                       >
                         {message.text}
@@ -319,13 +396,24 @@ export default function PatientTriageChatbot() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={resetChat}
-                  className="flex items-center gap-2 rounded-2xl bg-black px-5 py-3 text-white transition-colors hover:bg-slate-800"
-                >
-                  <RotateCcw size={18} />
-                  Start Again
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() =>
+                      router.push(`/doctors?s=${recommendedDoctor}`)
+                    }
+                    className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#0077B6] px-5 py-3 font-semibold text-white transition-colors hover:bg-[#005f92]"
+                  >
+                    <Stethoscope size={18} />
+                    View Suggested Doctors
+                  </button>
+                  <button
+                    onClick={resetChat}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-slate-100 px-5 py-3 font-semibold text-slate-700 transition-colors hover:bg-slate-200"
+                  >
+                    <RotateCcw size={18} />
+                    Start Again
+                  </button>
+                </div>
               )}
             </div>
           </div>

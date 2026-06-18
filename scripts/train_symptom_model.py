@@ -25,17 +25,13 @@ y_doctor = df["doctor_type"]
 
 print("Vectorizing...")
 
-
 vectorizer = TfidfVectorizer(
-    stop_words="english",
-    ngram_range=(1, 3),
+    ngram_range=(1, 2),
     min_df=2,
     max_df=0.98,
 )
 
-X_vec = vectorizer.fit_transform(
-    X
-)
+X_vec = vectorizer.fit_transform(X)
 
 
 print("Training disease model...")
