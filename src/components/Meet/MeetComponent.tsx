@@ -20,7 +20,7 @@ const registerPeer = async (
   peerId: string,
   userId: number,
   userType: "doctor" | "patient",
-  appointmentId: number
+  appointmentId: number,
 ) => {
   try {
     const response = await fetch(`${API_BASE_URL}/peer/register`, {
@@ -43,11 +43,11 @@ const registerPeer = async (
 
 const getOtherUserPeerId = async (
   appointmentId: number,
-  userType: "doctor" | "patient"
+  userType: "doctor" | "patient",
 ): Promise<string | null> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/peer/other/${appointmentId}/${userType}`
+      `${API_BASE_URL}/peer/other/${appointmentId}/${userType}`,
     );
     if (!response.ok) throw new Error("Failed to fetch other user peer ID");
     const data = await response.json();
@@ -60,7 +60,7 @@ const getOtherUserPeerId = async (
 const getConnectionStatus = async (appointmentId: number) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/peer/status/${appointmentId}`
+      `${API_BASE_URL}/peer/status/${appointmentId}`,
     );
     if (!response.ok) throw new Error("Failed to fetch connection status");
     return await response.json();
@@ -194,7 +194,7 @@ export default function MeetComponent({
         setConnectionError(
           `Failed to start media: ${
             error instanceof Error ? error.message : String(error)
-          }`
+          }`,
         );
       }
     };
@@ -203,7 +203,6 @@ export default function MeetComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasJoined]);
 
-  // Original media capture effect (still run normal effect for cameraOn toggling)
   useEffect(() => {
     const videoElement = videoRef.current;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -234,7 +233,7 @@ export default function MeetComponent({
 
       timeoutId = setTimeout(() => {
         console.error(
-          "❌ [TIMEOUT] getUserMedia promise hanging - no response after 10 seconds"
+          "❌ [TIMEOUT] getUserMedia promise hanging - no response after 10 seconds",
         );
       }, 10000);
 
@@ -249,9 +248,11 @@ export default function MeetComponent({
 
           setTimeout(() => {
             try {
-              const audioContext = new (window.AudioContext ||
+              const audioContext = new (
+                window.AudioContext ||
                 // @ts-expect-error - webkit support
-                window.webkitAudioContext)();
+                window.webkitAudioContext
+              )();
               const analyser = audioContext.createAnalyser();
               const source = audioContext.createMediaStreamSource(stream);
               source.connect(analyser);
@@ -263,7 +264,7 @@ export default function MeetComponent({
               const detectSound = () => {
                 if (analyserRef.current && !isMuted) {
                   const dataArray = new Uint8Array(
-                    analyserRef.current.frequencyBinCount
+                    analyserRef.current.frequencyBinCount,
                   );
                   analyserRef.current.getByteFrequencyData(dataArray);
                   const average =
@@ -278,7 +279,7 @@ export default function MeetComponent({
             } catch (error) {
               console.warn(
                 "⚠️ Sound detection setup failed (non-critical):",
-                error
+                error,
               );
             }
           }, 0);
@@ -286,7 +287,7 @@ export default function MeetComponent({
         .catch((error) => {
           if (timeoutId !== undefined) clearTimeout(timeoutId);
           setConnectionError(
-            `Cannot access camera/microphone: ${error.message}`
+            `Cannot access camera/microphone: ${error.message}`,
           );
         });
     }
@@ -296,7 +297,6 @@ export default function MeetComponent({
     };
   }, [cameraOn, isMuted]);
 
-  // Setup peer connection and register with backend
   useEffect(() => {
     if (!hasJoined) return;
 
@@ -328,7 +328,7 @@ export default function MeetComponent({
                 localStreamRef.current.getTracks().length === 0
               ) {
                 console.warn(
-                  "⚠️ Both connected but local stream not ready yet, retrying..."
+                  "⚠️ Both connected but local stream not ready yet, retrying...",
                 );
                 hasInitiatedConnection = false;
                 return;
@@ -336,7 +336,7 @@ export default function MeetComponent({
               hasInitiatedConnection = true;
               const otherPeerId = await getOtherUserPeerId(
                 appointmentId,
-                data.type
+                data.type,
               );
 
               if (otherPeerId && otherPeerId !== myPeerId) {
@@ -347,7 +347,7 @@ export default function MeetComponent({
                   "⚠️ Invalid peer ID:",
                   otherPeerId,
                   "myPeerId:",
-                  myPeerId
+                  myPeerId,
                 );
                 hasInitiatedConnection = false;
               }
@@ -379,7 +379,6 @@ export default function MeetComponent({
         });
 
         myPeer.on("call", (call) => {
-          // Guard: prevent multiple handlers on same call
           if (
             mediaConnectionRef.current &&
             mediaConnectionRef.current.peer === call.peer
@@ -438,9 +437,11 @@ export default function MeetComponent({
               });
 
               try {
-                const audioContext = new (window.AudioContext ||
+                const audioContext = new (
+                  window.AudioContext ||
                   // @ts-expect-error webkit
-                  window.webkitAudioContext)();
+                  window.webkitAudioContext
+                )();
                 const analyser = audioContext.createAnalyser();
                 const source =
                   audioContext.createMediaStreamSource(remoteStream);
@@ -450,7 +451,7 @@ export default function MeetComponent({
                 const detectRemoteSound = () => {
                   if (analyser && remoteStream) {
                     const dataArray = new Uint8Array(
-                      analyser.frequencyBinCount
+                      analyser.frequencyBinCount,
                     );
                     analyser.getByteFrequencyData(dataArray);
                     const average =
@@ -463,7 +464,7 @@ export default function MeetComponent({
               } catch (error) {
                 console.warn(
                   "⚠️ Remote audio analysis failed (non-critical):",
-                  error
+                  error,
                 );
               }
             });
@@ -476,8 +477,6 @@ export default function MeetComponent({
               setRemoteStream(null);
             });
 
-            // NOW answer the call AFTER all handlers are registered
-
             call.answer(localStreamRef.current);
             mediaConnectionRef.current = call;
           } catch (error) {
@@ -486,8 +485,6 @@ export default function MeetComponent({
         });
 
         myPeer.on("connection", (conn) => {
-          // Receive data connection
-
           dataConnectionRef.current = conn;
 
           conn.on("open", () => {});
@@ -565,8 +562,6 @@ export default function MeetComponent({
       }
     }, 10000);
 
-    // Register stream handler IMMEDIATELY
-
     call.on("stream", (remoteStream) => {
       clearTimeout(callTimeout);
       clearTimeout(callTimeout);
@@ -594,9 +589,11 @@ export default function MeetComponent({
       });
 
       try {
-        const audioContext = new (window.AudioContext ||
+        const audioContext = new (
+          window.AudioContext ||
           // @ts-expect-error webkit
-          window.webkitAudioContext)();
+          window.webkitAudioContext
+        )();
         const analyser = audioContext.createAnalyser();
         const source = audioContext.createMediaStreamSource(remoteStream);
         source.connect(analyser);
@@ -641,7 +638,6 @@ export default function MeetComponent({
     });
 
     conn.on("data", (data) => {
-      // Receive chat message
       const message = data as {
         sender: string;
         text: string;
@@ -757,7 +753,6 @@ export default function MeetComponent({
     return (
       <div className="w-full h-screen bg-gradient-to-br from-[#0a1628] via-[#1a3a52] to-[#2d5a7b] flex items-center justify-center p-6">
         <div className="max-w-2xl w-full">
-          {/* Header */}
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-6">
               <Image
@@ -779,13 +774,10 @@ export default function MeetComponent({
             </p>
           </div>
 
-          {/* Main Content Container */}
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
             <div className="grid grid-cols-2 gap-8 p-8">
-              {/* Left Side - Video Preview */}
               <div className="flex flex-col justify-center">
                 <div className="relative">
-                  {/* Video Preview */}
                   <div className="rounded-2xl overflow-hidden bg-black shadow-lg mb-4">
                     <video
                       ref={videoRef}
@@ -807,7 +799,6 @@ export default function MeetComponent({
                       </div>
                     )}
 
-                    {/* Sound Indicator - Animated Bars */}
                     <div className="absolute bottom-3 left-3 flex items-end gap-1">
                       {[...Array(5)].map((_, i) => (
                         <div
@@ -825,7 +816,6 @@ export default function MeetComponent({
                       ))}
                     </div>
 
-                    {/* Mute Indicator Badge */}
                     {isMuted && (
                       <div className="absolute top-3 right-3 bg-red-500/90 rounded-full p-2.5 backdrop-blur-md">
                         <MicOff size={18} className="text-white" />
@@ -837,7 +827,6 @@ export default function MeetComponent({
                     Your Preview
                   </p>
 
-                  {/* Local Stream Diagnostics */}
                   {inMeeting && (
                     <div className="bg-black/60 backdrop-blur rounded-lg px-2 py-1.5 text-xs text-white border border-blue-500/30">
                       <p className="font-semibold mb-0.5">📤 You:</p>
@@ -864,17 +853,14 @@ export default function MeetComponent({
                 </div>
               </div>
 
-              {/* Right Side - Settings & Join Button */}
               <div className="flex flex-col justify-between">
                 <div className="space-y-6">
-                  {/* Settings Title */}
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-6">
                       Prepare for Meeting
                     </h2>
                   </div>
 
-                  {/* Video Setting */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors">
                       <div className="flex items-center gap-3">
@@ -903,7 +889,6 @@ export default function MeetComponent({
                     </div>
                   </div>
 
-                  {/* Audio Setting */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors">
                       <div className="flex items-center gap-3">
@@ -932,7 +917,6 @@ export default function MeetComponent({
                     </div>
                   </div>
 
-                  {/* Meeting Info */}
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <p className="text-xs text-gray-400 mb-2">Meeting ID</p>
                     <p className="text-white font-mono font-semibold break-all">
@@ -940,7 +924,6 @@ export default function MeetComponent({
                     </p>
                   </div>
 
-                  {/* Error Display */}
                   {connectionError && (
                     <div className="bg-red-500/20 border border-red-500 rounded-lg p-4">
                       <p className="text-red-200 text-sm">{connectionError}</p>
@@ -948,7 +931,6 @@ export default function MeetComponent({
                   )}
                 </div>
 
-                {/* Join Button */}
                 <button
                   onClick={handleJoinMeeting}
                   className="w-full bg-gradient-to-r from-[#0077B6] to-[#005f8c] hover:shadow-2xl hover:shadow-[#0077B6]/50 text-white font-bold py-4 rounded-xl transition-all duration-200 transform hover:scale-105 mt-6"
@@ -961,7 +943,6 @@ export default function MeetComponent({
             </div>
           </div>
 
-          {/* Footer Info */}
           <div className="text-center mt-8 text-gray-400 text-sm">
             <p>
               Make sure your camera and microphone are working before joining
@@ -976,7 +957,6 @@ export default function MeetComponent({
     return (
       <div className="w-full h-screen bg-gradient-to-br from-[#0a1628] via-[#1a3a52] to-[#2d5a7b] flex flex-col items-center justify-center p-6">
         <div className="text-center">
-          {/* Animated Logo */}
           <div className="mb-8">
             <Image
               src="/assets/logoimglogo.png"
@@ -987,13 +967,11 @@ export default function MeetComponent({
             />
           </div>
 
-          {/* Text */}
           <h1 className="text-4xl font-bold text-white mb-3">MediSync</h1>
           <p className="text-xl text-gray-300 mb-8">
             Connecting to your meeting...
           </p>
 
-          {/* Loading Animation */}
           <div className="flex items-center justify-center gap-2 mb-8">
             {[0, 1, 2].map((i) => (
               <div
@@ -1006,15 +984,14 @@ export default function MeetComponent({
             ))}
           </div>
 
-          {/* Status Text */}
           <p className="text-gray-400 text-sm">
             {data.type === "patient"
               ? doctorJoined
                 ? "Doctor is here! Starting connection..."
                 : "Waiting for doctor to join..."
               : patientJoined
-              ? "Patient is here! Starting connection..."
-              : "Waiting for patient to join..."}
+                ? "Patient is here! Starting connection..."
+                : "Waiting for patient to join..."}
           </p>
         </div>
       </div>
@@ -1023,7 +1000,6 @@ export default function MeetComponent({
 
   return (
     <div className="w-full h-screen bg-black flex overflow-hidden">
-      {/* ==================== DEBUG PANEL ====================*/}
       <div className="fixed top-4 left-4 z-50 bg-gray-900/90 border border-gray-700 rounded-lg p-3 text-xs text-white max-w-xs">
         <div className="font-bold mb-2 text-yellow-400">🔧 Debug State</div>
         <div className="space-y-1 font-mono text-gray-300">
@@ -1076,12 +1052,9 @@ export default function MeetComponent({
         </div>
       </div>
 
-      {/* ==================== MAIN CONTENT ====================*/}
       <div className="flex-1 flex overflow-hidden gap-3 p-3">
-        {/* LEFT SIDE - Main Video Area */}
         <div className="flex-1 flex flex-col items-center justify-center bg-black rounded-2xl overflow-hidden relative">
           {remoteStream ? (
-            // Remote video
             <div className="w-full h-full bg-black flex items-center justify-center relative">
               <video
                 ref={remoteVideoRef}
@@ -1100,7 +1073,6 @@ export default function MeetComponent({
               />
             </div>
           ) : data.type === "patient" && !doctorJoined ? (
-            // Waiting for Doctor State
             <div className="flex flex-col items-center justify-center gap-8">
               <div className="relative w-32 h-32">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0077B6] to-[#005f8c] rounded-full animate-pulse blur-lg opacity-75"></div>
@@ -1124,7 +1096,6 @@ export default function MeetComponent({
               </div>
             </div>
           ) : data.type === "doctor" && !patientJoined ? (
-            // Doctor waiting for patient
             <div className="flex flex-col items-center justify-center gap-8">
               <div className="relative w-32 h-32">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0077B6] to-[#005f8c] rounded-full animate-pulse blur-lg opacity-75"></div>
@@ -1148,7 +1119,6 @@ export default function MeetComponent({
               </div>
             </div>
           ) : (
-            // Both connected but no video yet
             <div className="text-center">
               <div className="w-48 h-48 bg-gradient-to-br from-[#0077B6]/20 to-[#005f8c]/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#0077B6]/30 animate-pulse">
                 <span className="text-7xl">
@@ -1161,7 +1131,6 @@ export default function MeetComponent({
             </div>
           )}
 
-          {/* ==================== OVERLAY: HEADER (Top-Left) ====================*/}
           <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md rounded-xl px-4 py-3">
             <div className="flex items-center gap-3">
               <Image
@@ -1180,7 +1149,6 @@ export default function MeetComponent({
             </div>
           </div>
 
-          {/* ==================== OVERLAY: STATUS (Top-Right) ====================*/}
           <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full">
             <div
               className={`w-2.5 h-2.5 rounded-full animate-pulse ${
@@ -1195,12 +1163,11 @@ export default function MeetComponent({
                   ? "Patient Connected"
                   : "Waiting for Patient..."
                 : doctorJoined
-                ? "Doctor Connected"
-                : "Waiting for Doctor..."}
+                  ? "Doctor Connected"
+                  : "Waiting for Doctor..."}
             </span>
           </div>
 
-          {/* ==================== OVERLAY: STREAM DIAGNOSTICS (Top-Right, Below Status) ====================*/}
           {remoteStream && (
             <div className="absolute top-16 right-4 z-10 bg-black/70 backdrop-blur-md px-3 py-2 rounded-lg text-xs text-white border border-green-500/30">
               <p className="font-semibold mb-1">📡 Stream Status:</p>
@@ -1244,9 +1211,7 @@ export default function MeetComponent({
             </div>
           )}
 
-          {/* ==================== OVERLAY: CONTROLS (Bottom-Center) ====================*/}
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex gap-6 items-center bg-black/50 backdrop-blur-lg rounded-2xl px-8 py-4 shadow-2xl border border-white/10">
-            {/* Mute Button */}
             <div className="flex flex-col items-center">
               <Button
                 onClick={handleMuteToggle}
@@ -1264,7 +1229,6 @@ export default function MeetComponent({
               </span>
             </div>
 
-            {/* Camera Button */}
             <div className="flex flex-col items-center">
               <Button
                 onClick={handleCameraToggle}
@@ -1282,7 +1246,6 @@ export default function MeetComponent({
               </span>
             </div>
 
-            {/* End Call Button */}
             <div className="flex flex-col items-center">
               <Button
                 onClick={handleEndMeeting}
@@ -1298,11 +1261,8 @@ export default function MeetComponent({
           </div>
         </div>
 
-        {/* RIGHT SIDE - Chat & Preview (Split) */}
         <div className="w-96 flex flex-col gap-3 min-w-0">
-          {/* ==================== CHAT SECTION ====================*/}
           <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 min-h-0">
-            {/* Chat Header */}
             <div className="bg-gradient-to-r from-[#0077B6] via-[#005f8c] to-[#0077B6] text-white p-5 flex items-center gap-3 shadow-md">
               <div className="bg-white/20 rounded-lg p-2">
                 <MessageCircle size={22} />
@@ -1315,7 +1275,6 @@ export default function MeetComponent({
               </div>
             </div>
 
-            {/* Messages Container */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-to-b from-gray-50 to-white">
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-gray-400">
@@ -1363,7 +1322,6 @@ export default function MeetComponent({
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Message Input */}
             <div className="p-4 border-t border-gray-100 bg-white flex gap-3">
               <Input
                 type="text"
@@ -1386,9 +1344,7 @@ export default function MeetComponent({
             </div>
           </div>
 
-          {/* ==================== VIDEO PREVIEW SECTION ====================*/}
           <div className="h-56 flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
-            {/* Preview Header */}
             <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-5 py-3 flex items-center justify-between border-b border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-[#0077B6]/20 rounded-lg flex items-center justify-center">
@@ -1400,7 +1356,6 @@ export default function MeetComponent({
                 </div>
               </div>
 
-              {/* Activity Indicators */}
               <div className="flex gap-2 items-center">
                 {isMuted && (
                   <div className="bg-red-500/90 rounded-lg px-2.5 py-1.5 backdrop-blur-md flex items-center gap-1.5">
@@ -1421,7 +1376,6 @@ export default function MeetComponent({
               </div>
             </div>
 
-            {/* Video Preview */}
             <div className="flex-1 bg-black overflow-hidden relative group">
               <video
                 ref={videoRef}
@@ -1444,9 +1398,7 @@ export default function MeetComponent({
                 </div>
               )}
 
-              {/* Sound Indicator - Bottom Left */}
               <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                {/* Mic Icon with Green Glow when Speaking */}
                 <div className="relative">
                   {soundLevel > 0 && !isMuted && (
                     <>
@@ -1459,8 +1411,8 @@ export default function MeetComponent({
                       soundLevel > 0 && !isMuted
                         ? "bg-green-500 text-white"
                         : isMuted
-                        ? "bg-red-500 text-white"
-                        : "bg-blue-500/80 text-white"
+                          ? "bg-red-500 text-white"
+                          : "bg-blue-500/80 text-white"
                     }`}
                   >
                     {isMuted ? <MicOff size={18} /> : <Mic size={18} />}

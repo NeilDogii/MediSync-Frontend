@@ -16,6 +16,7 @@ import {
   Stethoscope,
   Download,
 } from "lucide-react";
+import { fetchMeetingToken } from "@/utils/requests/appointment/appointments";
 
 export default function AppointmentsPage({ userId }: { userId: string }) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -440,9 +441,13 @@ export default function AppointmentsPage({ userId }: { userId: string }) {
 
                         {/* Join Meeting Button */}
                         <button
-                          onClick={() => {
+                          onClick={async () => {
                             // Placeholder for meeting logic
-                            window.open(`https://meet.google.com/`, "_blank");
+                            const { token } = await fetchMeetingToken({
+                              appointmentId: appointment.id,
+                              type: "patient",
+                            });
+                            window.open(`/conference?token=${token}`, "_blank");
                           }}
                           className="bg-gradient-to-r from-[#0074cc] to-[#005fa3] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all whitespace-nowrap"
                         >
