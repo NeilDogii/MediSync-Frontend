@@ -49,8 +49,14 @@ import { Doctor } from "@/@types/doctor";
 //   },
 // ];
 
-export default function DoctorsListPage({ doctors }: { doctors: Doctor[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function DoctorsListPage({
+  doctors,
+  search,
+}: {
+  doctors: Doctor[];
+  search: string;
+}) {
+  const [searchQuery, setSearchQuery] = useState(search);
   const data = doctors.map((doctor) => ({
     id: doctor.id,
     name: doctor.name,

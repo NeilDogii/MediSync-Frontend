@@ -215,7 +215,7 @@ export default function PatientTriageChatbot() {
   };
 
   return (
-    <div className="bg-gradient-to-br pt-28 from-cyan-50 via-white to-blue-100">
+    <div className="h-[calc(100vh+20px)] bg-gradient-to-br pt-28 from-cyan-50 via-white to-blue-100">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute left-[-200px] top-[-150px] h-[450px] w-[450px] rounded-full bg-cyan-200/30 blur-3xl" />
         <div className="absolute right-[-100px] bottom-[-150px] h-[400px] w-[400px] rounded-full bg-blue-300/20 blur-3xl" />

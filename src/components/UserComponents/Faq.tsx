@@ -10,40 +10,49 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: "How do I book an online consultation?",
-    answer: "Simply select your preferred department, choose an available time slot, and fill out the appointment form. You'll receive a confirmation email with your appointment details and video call link."
+    answer:
+      "Simply choose an available time slot, and fill out the appointment form. Then you can check out your appointment details in your account dashboard. You will receive a confirmation email with the consultation link.",
   },
   {
-    question: "What should I prepare before my telemedicine appointment?",
-    answer: "Ensure you have a stable internet connection, a working camera and microphone, and any relevant medical records or test results. Be in a quiet, well-lit space for the consultation."
+    question: "What should I prepare before my medisync appointment?",
+    answer:
+      "Ensure you have a stable internet connection, a working camera and microphone, and any relevant medical records or test results. Be in a quiet, well-lit space for the consultation.",
   },
   {
-    question: "Are telemedicine consultations as effective as in-person visits?",
-    answer: "Yes, for many conditions, virtual consultations are equally effective. Our doctors can diagnose, prescribe medications, and provide treatment plans. For cases requiring physical examination, we'll recommend an in-person visit."
+    question: "Are medisync consultations as effective as in-person visits?",
+    answer:
+      "Yes, for many conditions, virtual consultations are equally effective. Our doctors can diagnose, prescribe medications, and provide treatment plans. For cases requiring physical examination, we'll recommend an in-person visit.",
   },
   {
     question: "How long does a typical consultation last?",
-    answer: "Most consultations last between 15-30 minutes, depending on the complexity of your condition. You'll have sufficient time to discuss your concerns with the doctor."
+    answer:
+      "Most consultations last between 15-30 minutes, depending on the complexity of your condition. You'll have sufficient time to discuss your concerns with the doctor.",
   },
   {
-    question: "Can I get a prescription through telemedicine?",
-    answer: "Yes, our doctors can prescribe medications during your virtual consultation. Prescriptions will be sent directly to your preferred pharmacy or made available for download."
+    question: "Can I get a prescription through medisync?",
+    answer:
+      "Yes, our doctors can prescribe medications during your virtual consultation. Prescriptions will be sent directly to your preferred pharmacy or made available for download.",
   },
   {
     question: "Is my medical information secure and confidential?",
-    answer: "Absolutely. We use encrypted, HIPAA-compliant platforms to ensure your medical information and consultations remain completely private and secure."
+    answer:
+      "Absolutely. We use encrypted, HIPAA-compliant platforms to ensure your medical information and consultations remain completely private and secure.",
   },
   {
     question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards, debit cards, UPI, net banking, and health insurance. Payment is processed securely through our encrypted payment gateway."
+    answer:
+      "We accept all major credit cards, debit cards, UPI, net banking, and health insurance. Payment is processed securely through our encrypted payment gateway.",
   },
   {
     question: "Can I reschedule or cancel my appointment?",
-    answer: "Yes, you can reschedule or cancel your appointment up to 2 hours before the scheduled time through your account dashboard or by contacting our support team."
+    answer:
+      "Yes, you can reschedule or cancel your appointment up to 2 hours before the scheduled time by contacting our support team.",
   },
   {
     question: "What if I have technical issues during my consultation?",
-    answer: "Our technical support team is available 24/7 to help you. You can also access troubleshooting guides in the help section or contact us via phone for immediate assistance."
-  }
+    answer:
+      "Our technical support team is available 24/7 to help you. You can also access troubleshooting guides in the help section or contact us via phone for immediate assistance.",
+  },
 ];
 
 export default function Faq() {
@@ -62,7 +71,8 @@ export default function Faq() {
             FAQ
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-            Common questions about our telemedicine services and how to make the most of your virtual healthcare experience
+            Common questions about our telemedicine services and how to make the
+            most of your virtual healthcare experience
           </p>
         </div>
 
@@ -91,7 +101,9 @@ export default function Faq() {
 
               <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  openIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  openIndex === index
+                    ? "max-h-96 opacity-100"
+                    : "max-h-0 opacity-0"
                 }`}
               >
                 <div className="px-6 pb-6 pl-16">
@@ -106,9 +118,7 @@ export default function Faq() {
 
         {/* Contact Section */}
         <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">
-            Still have questions?
-          </p>
+          <p className="text-gray-600 mb-4">Still have questions?</p>
           <button className="bg-[#0077B6] hover:bg-[#075985] text-white font-semibold px-8 py-3 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
             <a href="/contact">Contact Support</a>
           </button>
