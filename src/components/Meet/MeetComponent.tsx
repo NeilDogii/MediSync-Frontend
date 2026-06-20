@@ -362,12 +362,16 @@ export default function MeetComponent({
     const setupPeer = async () => {
       try {
         const uniquePeerId = `peer-${data.type}-${userId}-${Date.now()}`;
+        // const myPeer = new Peer(uniquePeerId, {
+        //   host: "localhost",
+        //   port: 5050,
+        //   path: "/video-server",
+        // });
         const myPeer = new Peer(uniquePeerId, {
-          host: "localhost",
-          port: 5050,
+          host: "medisync-backend-1-bhrq.onrender.com",
+          secure: true,
           path: "/video-server",
         });
-
         myPeer.on("open", async (id) => {
           setPeerId(id);
           try {
