@@ -38,7 +38,8 @@ export default function Hero() {
 
             <div className="flex items-center space-x-3 md:space-x-4">
               <Link
-                href="/video"
+                href="https://res.cloudinary.com/dhgfennr8/video/upload/WhatsApp_Video_2026-06-20_at_11.31.34_PM_vqac8h.mp4"
+                target="_blank"
                 className="bg-[#0074cc] hover:bg-[#005fa3] text-white 
                           w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center 
                           justify-center text-lg md:text-xl"
