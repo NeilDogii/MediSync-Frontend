@@ -5,8 +5,9 @@ import Get_started from "../../../../components/UserComponents/Get_started";
 import Team from "../../../../components/UserComponents/Team";
 import Testimonial from "../../../../components/UserComponents/Testimonial";
 import Footer from "../../../../components/UserComponents/Footer";
-import FeaturedHighlights from "@/components/UserComponents/user-dashboard/FeaturedHighlights";
+import FeaturedHighlights from "@/components/UserComponents/FeaturedHighlights";
 import { fetchDoctors } from "@/utils/requests/data/doctor";
+import RegisterDoctor from "@/components/UserComponents/RegisterDoctor";
 
 export default async function page() {
   const doctors = await fetchDoctors();
@@ -18,6 +19,7 @@ export default async function page() {
       {/* <Service_card /> */}
       <FeaturedHighlights />
       <Team doctors={doctors} />
+      <RegisterDoctor />
       <Testimonial />
       <Footer />
     </>
