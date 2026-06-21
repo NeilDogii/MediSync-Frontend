@@ -34,7 +34,7 @@ export default function RegisterDoctor() {
               <p className="mt-5 text-white/90 text-lg leading-relaxed max-w-xl">
                 Expand your practice, connect with more patients, manage
                 appointments effortlessly, and provide quality healthcare
-                through MediSync's modern platform.
+                through MediSync&apos;s modern platform.{" "}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
