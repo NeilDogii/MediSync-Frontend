@@ -121,12 +121,15 @@ function extractFeatures(text: string): string[] {
   const cleanWords = rawWords.filter((w) => !strictStopWords.has(w));
   const features: string[] = [];
 
+  // Generate Unigrams
   cleanWords.forEach((w) => features.push(w));
 
+  // Generate Bigrams
   for (let i = 0; i < cleanWords.length - 1; i++) {
     features.push(`${cleanWords[i]} ${cleanWords[i + 1]}`);
   }
 
+  // Generate Trigrams
   for (let i = 0; i < cleanWords.length - 2; i++) {
     features.push(`${cleanWords[i]} ${cleanWords[i + 1]} ${cleanWords[i + 2]}`);
   }
@@ -189,10 +192,13 @@ export function predictFromModel(symptoms: string) {
   const TEMPERATURE = 0.35;
   const maxLog = Math.max(...logLikelihoods);
 
+  // Soften extreme log-likelihood leads using the temperature parameter
   const exponents = logLikelihoods.map((score) =>
     Math.exp((score - maxLog) / TEMPERATURE),
   );
   const totalSum = exponents.reduce((a, b) => a + b, 0);
+
+  // Normalize into a strict 0-100 percentage range
   const probabilities = exponents.map((exp) =>
     totalSum > 0 ? exp / totalSum : 0,
   );

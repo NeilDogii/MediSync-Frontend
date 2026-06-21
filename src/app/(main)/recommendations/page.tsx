@@ -18,7 +18,6 @@ interface AppointmentData {
 }
 
 interface RecommendationData {
-  advice: string;
   recommendedSpecialty: string;
   recommendedDoctors: Partial<Doctor>[];
 }
@@ -174,7 +173,7 @@ export default function RecommendationsPage() {
         {/* Medical Advice */}
         {recommendations && (
           <>
-            <div className="bg-gradient-to-r from-[#0077B6] to-[#17A2B8] rounded-2xl shadow-lg p-8 mb-8 text-white">
+            {/* <div className="bg-gradient-to-r from-[#0077B6] to-[#17A2B8] rounded-2xl shadow-lg p-8 mb-8 text-white">
               <h2 className="text-2xl font-bold mb-4 flex items-center">
                 <span className="text-3xl mr-3">💡</span>
                 Medical Advice
@@ -182,7 +181,7 @@ export default function RecommendationsPage() {
               <p className="text-lg leading-relaxed">
                 {recommendations.advice}
               </p>
-            </div>
+            </div> */}
 
             {/* Recommended Specialty */}
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
